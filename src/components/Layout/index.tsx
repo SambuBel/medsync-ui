@@ -6,7 +6,16 @@ import { useStateContext } from "../../utils/context/StateContext";
 import { Meta, PageMeta } from "../Meta";
 import Header from "../Header";
 
-const Layout = ({ children, title, navigationPaths }) => {
+interface LayoutProps {
+  children: React.ReactNode;
+  title?: string;
+  navigationPaths?: {
+    menu?: unknown;
+    [key: string]: unknown;
+  };
+}
+
+const Layout: React.FC<LayoutProps> = ({ children, title, navigationPaths }) => {
   const { navigation, setNavigation } = useStateContext();
 
   useEffect(() => {

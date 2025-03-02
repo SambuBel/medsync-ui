@@ -9,10 +9,16 @@ export default function Home() {
   return (
     <Layout title="Inicio" navigationPaths={undefined}>
       <Hero />
-      <div className="bg-white w-full" >
-        <Services />
-        <Testimonials />
-        <QuoteRequest />
+      <div className="bg-white w-full gap-12 flex flex-col pt-12">
+        <section id="services">
+          <Services />
+        </section>
+        <section id="testimonials">
+          <Testimonials />
+        </section>
+        <section id="quote">
+          <QuoteRequest />
+        </section>
       </div>
     </Layout>
   );

@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import { motion } from "framer-motion";
 
 import "swiper/css";
 
@@ -47,7 +47,7 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="relative py-16 bg-gray-100 w-full">
+    <section className="relative py-20 bg-gray-100 w-full">
       <div className="container mx-auto text-center relative">
         <h2 className="text-3xl font-bold text-gray-800 mb-8">
           Testimonios de Profesionales
@@ -58,7 +58,7 @@ const Testimonials = () => {
 
         <Swiper
           modules={[Autoplay]}
-          spaceBetween={10}
+          spaceBetween={36}
           slidesPerView={1.3}
           breakpoints={{
             768: { slidesPerView: 2.2 },
@@ -69,19 +69,29 @@ const Testimonials = () => {
           autoplay={{ delay: 6000, disableOnInteraction: false }}
           speed={1200}
           className="w-full"
+          onSlideChange={(swiper) => {
+            document.querySelectorAll(".swiper-slide").forEach((slide, index) => {
+              if (index === swiper.activeIndex) {
+                slide.classList.add("scale-110");
+              } else {
+                slide.classList.remove("scale-110");
+              }
+            });
+          }}
         >
           {testimonials.map((testimonial, index) => (
             <SwiperSlide key={index} className="opacity-80 hover:opacity-100 transition-opacity duration-300">
-              <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow-lg h-[320px]">
-                <Image
-                  src={testimonial.avatar}
-                  width={80}
-                  height={80}
-                  className="rounded-full mb-4"
-                  alt={testimonial.name}
-                />
+              <motion.div
+                className="flex flex-col items-center bg-white p-6 rounded-xl shadow-lg h-[320px] transition-all duration-500"
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className="avatar">
+                  <div className="w-24 rounded-full">
+                    <img src={testimonial.avatar} />
+                  </div>
+                </div>
                 <p className="text-gray-700 text-lg italic text-center h-[120px] flex items-center justify-center">
-                  "{testimonial.comment}"
+                  &quot;{testimonial.comment}&quot;
                 </p>
                 <h4 className="mt-4 text-lg font-semibold text-gray-900">
                   {testimonial.name}
@@ -89,7 +99,7 @@ const Testimonials = () => {
                 <span className="text-gray-500 text-sm">
                   {testimonial.specialty}
                 </span>
-              </div>
+              </motion.div>
             </SwiperSlide>
           ))}
         </Swiper>
