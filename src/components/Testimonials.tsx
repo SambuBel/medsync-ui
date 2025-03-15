@@ -80,9 +80,9 @@ const Testimonials = () => {
           }}
         >
           {testimonials.map((testimonial, index) => (
-            <SwiperSlide key={index} className="opacity-80 hover:opacity-100 transition-opacity duration-300">
+            <SwiperSlide key={index} className="duration-300">
               <motion.div
-                className="flex flex-col items-center bg-white p-6 rounded-xl shadow-lg h-[320px] transition-all duration-500"
+                className="flex flex-col items-center bg-white p-6 rounded-xl h-[320px] transition-all duration-500"
                 whileHover={{ scale: 1.05 }}
               >
                 <div className="avatar">

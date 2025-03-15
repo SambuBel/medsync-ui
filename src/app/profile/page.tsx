@@ -1,12 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FaUser, FaCalendarAlt, FaSignOutAlt, FaHeartbeat, FaFileMedical } from "react-icons/fa";
+import ProfileSidebar from "@/components/Profile/ProfileSidebar";
+import ProfileContent from "@/components/Profile/ProfileContent";
+import AppointmentModal from "@/components/AppointmentModal";
 
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("home");
+  const [appointments, setAppointments] = useState([]);
+  const [viewAppointments, setViewAppointments] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -21,13 +29,21 @@ export default function ProfilePage() {
       setLoading(false);
     }
 
+    async function fetchAppointments() {
+      const res = await fetch("/api/appointments");
+
+      if (res.ok) {
+        const data = await res.json();
+        setAppointments(data);
+      }
+    }
+
     fetchProfile();
+    fetchAppointments();
   }, [router]);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
-
-    // Redirigir al usuario a la página de inicio
     router.push("/");
   };
 
@@ -35,40 +51,19 @@ export default function ProfilePage() {
   if (!user) return <p className="text-center mt-10">No autorizado</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-12 px-4">
-      {/* 🔹 Tarjeta del Usuario */}
-      <div className="bg-white shadow-xl rounded-xl p-6 w-full max-w-lg text-center">
-        <div className="avatar mb-4">
-          <div className="w-24 h-24 rounded-full border-4 border-primary mx-auto">
-            <FaUser className="w-full h-full text-gray-500" />
-          </div>
-        </div>
-        <h2 className="text-2xl font-semibold text-gray-800">{user.email}</h2>
-        <p className="text-gray-600 text-sm">{user.role}</p>
-      </div>
-
-      {/* 🔹 Accesos Rápidos */}
-      <div className="grid grid-cols-2 gap-6 mt-8 max-w-lg w-full">
-        <button className="bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:bg-blue-100 transition-all">
-          <FaCalendarAlt className="text-3xl text-primary mb-2" />
-          <p className="text-gray-700 text-sm font-medium">Mis Turnos</p>
-        </button>
-        <button className="bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:bg-blue-100 transition-all">
-          <FaHeartbeat className="text-3xl text-primary mb-2" />
-          <p className="text-gray-700 text-sm font-medium">Historial Médico</p>
-        </button>
-        <button className="bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:bg-blue-100 transition-all">
-          <FaFileMedical className="text-3xl text-primary mb-2" />
-          <p className="text-gray-700 text-sm font-medium">Recetas</p>
-        </button>
-        <button
-          className="bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:bg-red-100 transition-all"
-          onClick={handleLogout}
-        >
-          <FaSignOutAlt className="text-3xl text-red-500 mb-2" />
-          <p className="text-gray-700 text-sm font-medium">Cerrar Sesión</p>
-        </button>
-      </div>
+    <div className="flex h-screen transition-all duration-300">
+      <ProfileSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        handleLogout={handleLogout}
+        isCollapsed={isCollapsed}
+        toggleSidebar={toggleSidebar}
+      />
+      <ProfileContent
+        activeTab={activeTab}
+        appointments={appointments}
+        setViewAppointments={setViewAppointments} setActiveTab={undefined} user={undefined}      />
+      {viewAppointments && <AppointmentModal isOpen={viewAppointments} onClose={() => setViewAppointments(false)} />}
     </div>
   );
 }

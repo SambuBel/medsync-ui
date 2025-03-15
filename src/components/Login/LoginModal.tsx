@@ -36,7 +36,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       }
 
       console.log("✅ Login exitoso!");
-
       onClose(); // 🔒 Cierra el modal
       router.push("/profile"); // 🔄 Redirige al usuario al perfil
     } catch (err: any) {
@@ -48,19 +47,24 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 h-screen">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-96 relative">
+        {/* 🔹 Botón para cerrar */}
+        <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
           <FaTimes size={18} />
         </button>
-        <h2 className="text-xl font-semibold text-center">Iniciar Sesión</h2>
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        <form onSubmit={handleLogin} className="mt-4 space-y-4">
+
+        {/* 🔹 Título */}
+        <h2 className="text-2xl font-semibold text-gray-800 text-center">Iniciar Sesión</h2>
+        {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+
+        {/* 🔹 Formulario */}
+        <form onSubmit={handleLogin} className="mt-6 space-y-4">
           <input
             type="email"
             placeholder="Correo electrónico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
             required
           />
           <input
@@ -68,10 +72,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
             required
           />
-          <button type="submit" className="btn btn-primary w-full text-white" disabled={loading}>
+
+          {/* 🔹 Botón de envío */}
+          <button
+            type="submit"
+            className="btn btn-primary w-full text-white rounded-lg font-semibold hover:bg-blue-600 transition-all"
+            disabled={loading}
+          >
             {loading ? "Cargando..." : "Iniciar Sesión"}
           </button>
         </form>
