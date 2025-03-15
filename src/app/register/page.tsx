@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { GenderEnum, LicenseTypeEnum, RoleEnum, SpecialtyEnum } from "@/utils/constants/Appointment";
+import { motion, useAnimation } from "framer-motion";
 
 interface InputFieldProps {
     label: string;
@@ -34,6 +35,32 @@ const InputField = ({ label, type = "text", name, value, onChange }: InputFieldP
   );
 };
 
+const BouncingBall = ({ reverse }: { reverse?: boolean }) => {
+    const controls = useAnimation();
+  
+    useEffect(() => {
+      const animateBall = async () => {
+        while (true) {
+          await controls.start({
+            x: reverse ? [500, 0, -500, 0, 500] : [-500, 0, 500, 0, -500],
+            y: [0, 300, 0, -300, 0],
+            scale: [1, 1.8, 1.4, 1, 1],
+            borderRadius: ["50%", "40%", "50%"],
+            transition: { duration: 20, ease: "easeInOut", repeat: Infinity }
+          });
+        }
+      };
+      animateBall();
+    }, [controls, reverse]);
+  
+    return (
+      <motion.div
+        animate={controls}
+        className="absolute w-32 h-32 bg-blue-400 opacity-50 rounded-full"
+      />
+    );
+  };
+  
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -61,17 +88,32 @@ const RegisterPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted: ", formData);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al registrar usuario");
+  
+      alert("✅ Usuario registrado exitosamente");
+    } catch (error: any) {
+      alert(`❌ ${error.message}`);
+    }
   };
-
+  
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Formulario */}
+      <BouncingBall />
+      <BouncingBall reverse />      
       <div className="w-3/4 flex flex-col justify-center items-center p-10 bg-white overflow-y-auto h-full">
         <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4 h-full">
-          <h2 className="text-3xl font-bold text-blue-500 text-center mb-4">Crear cuenta</h2>
+          <h2 className="text-3xl font-bold text-blue-500 text-center mb-4 py-10">Crear cuenta</h2>
 
           {/* Datos básicos */}
           <div className="space-y-3 flex flex-col gap-4">
@@ -126,13 +168,6 @@ const RegisterPage = () => {
                 </select>
                 <InputField label="Educación" name="education" value={formData.education} onChange={handleChange} />
                 <InputField label="Experiencia (años)" type="number" name="experience" value={formData.experience} onChange={handleChange} />
-              </>
-            )}
-            {formData.role === "PATIENT" && (
-              <>
-                <InputField label="Grupo Sanguíneo" name="bloodType" value={formData.bloodType} onChange={handleChange} />
-                <InputField label="Enfermedades Crónicas" name="chronicDiseases" value={formData.chronicDiseases} onChange={handleChange} />
-                <InputField label="Alergias" name="allergies" value={formData.allergies} onChange={handleChange} />
               </>
             )}
           </div>
