@@ -4,36 +4,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { GenderEnum, LicenseTypeEnum, RoleEnum, SpecialtyEnum } from "@/utils/constants/Appointment";
 import { motion, useAnimation } from "framer-motion";
-
-interface InputFieldProps {
-    label: string;
-    type?: string;
-    name: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  }  
-
-const InputField = ({ label, type = "text", name, value, onChange }: InputFieldProps) => {
-  return (
-    <div className="relative w-full">
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        required
-        className="input input-bordered w-full bg-white text-gray-800 peer input-info bg-transparent"
-      />
-      <label
-        className={`absolute left-3 px-1 bg-white text-gray-500 transition-all ${
-          value ? "top-[-12px] text-xs text-blue-500" : "top-3 text-base text-gray-400"
-        } peer-focus:top-[-12px] peer-focus:text-xs peer-focus:text-blue-500 peer-focus:bg-white`}
-      >
-        {label}
-      </label>
-    </div>
-  );
-};
+import InputField from "@/components/Register/InputField";
+import LoadingComponent from "@/components/common/LoadingComponent";
+import ModalComponent from "@/components/common/ModalComponent";
 
 const BouncingBall = ({ reverse }: { reverse?: boolean }) => {
     const controls = useAnimation();
@@ -82,6 +55,9 @@ const RegisterPage = () => {
     chronicDiseases: "",
     allergies: "",
   });
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,6 +66,8 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -100,20 +78,24 @@ const RegisterPage = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al registrar usuario");
   
-      alert("✅ Usuario registrado exitosamente");
+      setModalMessage("✅ Usuario registrado exitosamente. Te llegará un correo con la confirmación.");
+      setShowModal(true);      
     } catch (error: any) {
-      alert(`❌ ${error.message}`);
-    }
+        setModalMessage(`❌ ${error.message}`);
+        setShowModal(true);
+    } finally {
+        setLoading(false);
+      }
   };
   
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden pb-10 bg-white">
       {/* Formulario */}
-      <BouncingBall />
-      <BouncingBall reverse />      
-      <div className="w-3/4 flex flex-col justify-center items-center p-10 bg-white overflow-y-auto h-full">
+      <div className="w-3/4 flex flex-col justify-center items-center p-10 bg-white overflow-y-auto h-full z-30 pb-10">
+        {loading && <LoadingComponent />}
+        {showModal && <ModalComponent message={modalMessage} onClose={() => setShowModal(false)} />}
         <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4 h-full">
-          <h2 className="text-3xl font-bold text-blue-500 text-center mb-4 py-10">Crear cuenta</h2>
+          <h2 className="text-3xl font-bold text-sky-500 text-center mb-4 py-10">Crear cuenta</h2>
 
           {/* Datos básicos */}
           <div className="space-y-3 flex flex-col gap-4">
@@ -130,7 +112,7 @@ const RegisterPage = () => {
               ))}
             </select>
           </div>
-            <div className="border-blue-400 border-t my-10"></div>
+        <div className="border-sky-500 border-t my-10"></div>
           {/* Selección de Rol */}
           <div className="space-y-3 text-gray-400 py-10">
             <label>Con cual te identificas</label>
@@ -140,7 +122,7 @@ const RegisterPage = () => {
                   key={key}
                   type="button"
                   onClick={() => setFormData({ ...formData, role: key })}
-                  className={`btn w-1/2 border-gray-300 text-gray-400 hover:bg-blue-700 hover:text-white hover:border-none ${formData.role === key ? "bg-blue-500 text-white" : "bg-white border-gray-300"}`}
+                  className={`btn w-1/2 btn-info border-gray-300 text-gray-400 hover:bg-blue-700 hover:text-white hover:border-none ${formData.role === key ? "bg-blue-500 text-white" : "bg-white border-gray-300"}`}
                 >
                   {value}
                 </button>
@@ -172,13 +154,15 @@ const RegisterPage = () => {
             )}
           </div>
 
-          <button type="submit" className="btn btn-primary w-full bg-blue-500 text-white">Registrarse</button>
+          <button type="submit" className="btn btn-primary w-full bg-blue-500 text-white mb-10">Registrarse</button>
         </form>
       </div>
 
       {/* Imagen */}
-      <div className="w-1/4 h-screen relative">
-        <Image src="/images/doctors.jpg" alt="Médicos" layout="fill" objectFit="cover" className="opacity-50" />
+      <div className="w-1/4 h-screen relative bg-current">
+        <BouncingBall />
+        <BouncingBall reverse />      
+        <Image src="/images/medico-01.jpg" alt="Médicos" layout="fill" objectFit="cover" className="opacity-70" />
       </div>
     </div>
   );
