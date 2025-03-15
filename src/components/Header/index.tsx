@@ -6,6 +6,7 @@ import { useStateContext } from "@/utils/context/StateContext";
 import { FaBars, FaTimes, FaUser, FaGlobe, FaUserPlus } from "react-icons/fa";
 import LoginButton from "../Login/LoginButton";
 import LoginModal from "../Login/LoginModal";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const { cosmicUser } = useStateContext();
@@ -14,6 +15,7 @@ const Header = () => {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,7 +103,7 @@ const Header = () => {
             ) : (
               <div className="flex gap-3">
                 <button
-                  onClick={() => {} }
+                  onClick={() => router.push("/register")} // 🔹 Redirección a la página de registro
                   className="btn btn-outline btn-primary text-blue-900 border-blue-300 hover:bg-blue-300 flex items-center gap-2"
                 >
                   <FaUserPlus /> Crear cuenta

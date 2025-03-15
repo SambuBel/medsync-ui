@@ -30,3 +30,24 @@ export const SpecialtyEnum = {
   DENTISTRY: "Odontología",
   PLASTIC_SURGERY: "Cirugía Plástica y Estética",
 };
+
+export const RoleEnum = {
+  DOCTOR: "Doctor",
+  PATIENT: "Paciente",
+};
+
+export const GenderEnum = {
+  MALE: "Masculino",
+  FEMALE: "Femenino",
+  NON_BINARY: "No binario",
+  OTHER: "Otro",
+  PREFER_NOT_TO_SAY: "Prefiero no decirlo",
+};
+
+export const LicenseTypeEnum = {
+  NATIONAL: "Nacional",
+  PROVINCIAL: "Provincial",
+  MUNICIPAL: "Municipal",
+  PRIVATE: "Privado",
+  OTHER: "Otro",
+};
