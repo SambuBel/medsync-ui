@@ -36,12 +36,20 @@ export const RoleEnum = {
   PATIENT: "Paciente",
 };
 
-export const GenderEnum = {
-  MALE: "Masculino",
-  FEMALE: "Femenino",
-  NON_BINARY: "No binario",
-  OTHER: "Otro",
-  PREFER_NOT_TO_SAY: "Prefiero no decirlo",
+export enum GenderEnum {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  NON_BINARY = "NON_BINARY",
+  OTHER = "OTHER",
+  PREFER_NOT_TO_SAY = "PREFER_NOT_TO_SAY",
+}
+
+export const GenderLabels: Record<GenderEnum, string> = {
+  [GenderEnum.MALE]: "Masculino",
+  [GenderEnum.FEMALE]: "Femenino",
+  [GenderEnum.NON_BINARY]: "No binario",
+  [GenderEnum.OTHER]: "Otro",
+  [GenderEnum.PREFER_NOT_TO_SAY]: "Prefiero no decirlo",
 };
 
 export const LicenseTypeEnum = {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { GenderEnum, LicenseTypeEnum, RoleEnum, SpecialtyEnum } from "@/utils/constants/Appointment";
+import { GenderLabels, LicenseTypeEnum, RoleEnum, SpecialtyEnum } from "@/utils/constants/Appointment";
 import { motion, useAnimation } from "framer-motion";
 import InputField from "@/components/Register/InputField";
 import LoadingComponent from "@/components/common/LoadingComponent";
@@ -111,7 +111,7 @@ const RegisterPage = () => {
 
             <select name="gender" value={formData.gender} onChange={handleChange} className="select select-bordered w-full bg-white text-gray-800">
               <option value="" disabled>Seleccione un género</option>
-              {Object.entries(GenderEnum).map(([key, value]) => (
+              {Object.entries(GenderLabels).map(([key, value]) => (
                 <option key={key} value={key}>{value}</option>
               ))}
             </select>
