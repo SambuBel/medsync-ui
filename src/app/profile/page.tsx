@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import ProfileSidebar from "@/components/Profile/ProfileSidebar";
 import ProfileContent from "@/components/Profile/ProfileContent";
 import AppointmentModal from "@/components/AppointmentModal";
+import LoadingComponent from "@/components/Profile/LoadingComponent";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -47,7 +48,7 @@ export default function ProfilePage() {
     router.push("/");
   };
 
-  if (loading) return <p className="text-center mt-10">Cargando...</p>;
+  if (loading) return <LoadingComponent />;
   if (!user) return <p className="text-center mt-10">No autorizado</p>;
 
   return (

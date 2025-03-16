@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FaPhone } from "react-icons/fa";
+import { FaArrowLeft, FaPhone } from "react-icons/fa";
 import InputField from "@/components/Register/InputField";
 import { loginWithEmail, loginWithGoogle, loginWithPhone } from "@/firebase/auth";
+import Link from "next/link";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -29,24 +30,20 @@ const LoginPage = () => {
     setError("");
   
     try {
-      // 🔹 Autenticación con Firebase
       const firebaseUser = await loginWithEmail(email, password);
   
-      // 🔹 Enviar UID de Firebase al backend
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firebaseUID: firebaseUser.uid }),
       });
-
-  
+ 
       if (!res.ok) {
         const data = await res.json();
         setError(data.error || "Error al iniciar sesión");
         return;
       }
   
-      // ✅ Guardar email si "Recordar usuario" está activo
       if (rememberMe) {
         localStorage.setItem("rememberedEmail", email);
       } else {
@@ -54,14 +51,13 @@ const LoginPage = () => {
       }
   
       console.log("✅ Login exitoso!");
-      router.push("/profile"); // 🔄 Redirige al usuario
+      router.push("/profile");
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleGoogleLogin = async () => {
     try {
@@ -93,6 +89,12 @@ const LoginPage = () => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-sky-500 bg-opacity-50 z-50 h-screen">
+      <div className="absolute top-6 left-6 hover:opacity-90">
+        <Link href="/" className="flex items-center gap-2 text-white text-sm font-semibold ">
+          <FaArrowLeft className="bg-white text-sky-500 p-2 rounded-full w-8 h-8" />
+          Volver
+        </Link>
+      </div>
       <div className="bg-white p-8 rounded-2xl shadow-xl w-96 relative">
         {/* 🔹 Título */}
         <h2 className="text-2xl font-semibold text-gray-800 text-center">Iniciar Sesión</h2>

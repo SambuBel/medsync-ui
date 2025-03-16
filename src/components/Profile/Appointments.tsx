@@ -13,7 +13,7 @@ export default function ProfileAppointments({appointments, setViewAppointments} 
             <h3 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
                Mis Turnos
             </h3>
-            <button className="btn btn-primary flex items-center gap-2" onClick={() => setViewAppointments(true)}>
+            <button className="btn btn-primary flex items-center gap-2 bg-sky-500 text-white" onClick={() => setViewAppointments(true)}>
               <FaPlusCircle /> Agendar consulta
             </button>
           </div>

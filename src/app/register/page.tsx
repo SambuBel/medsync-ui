@@ -8,6 +8,8 @@ import InputField from "@/components/Register/InputField";
 import LoadingComponent from "@/components/common/LoadingComponent";
 import ModalComponent from "@/components/common/ModalComponent";
 import { registerWithFirebase } from "@/firebase/auth";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
 
 const BouncingBall = ({ reverse }: { reverse?: boolean }) => {
     const controls = useAnimation();
@@ -89,6 +91,13 @@ const RegisterPage = () => {
       <div className="w-3/4 flex flex-col justify-center items-center p-10 bg-white overflow-y-auto h-full z-30 pb-10">
         {loading && <LoadingComponent />}
         {showModal && <ModalComponent message={modalMessage} onClose={() => setShowModal(false)} />}
+        {/* 🔹 Botón para volver a la Home */}
+        <div className="absolute top-6 left-6">
+          <Link href="/" className="flex items-center gap-2 text-sky-500 text-sm font-semibold hover:text-sky-600">
+            <FaArrowLeft className="bg-sky-500 text-white p-2 rounded-full w-8 h-8" />
+            Volver
+          </Link>
+        </div>
         <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4 h-full">
           <h2 className="text-3xl font-bold text-sky-500 text-center mb-4 py-10">Crear cuenta</h2>
 

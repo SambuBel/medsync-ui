@@ -8,6 +8,7 @@ import Prescriptions from "./Prescriptions";
 import Interconsults from "./Interconsults";
 import ControlAnalysis from "./ControlAnalysis";
 import PhysicalFitness from "./PhysicalFitness";
+import NewsCarousel from "./NewsCarousel";
 
 const ProfileContent = ({ activeTab, setActiveTab, user, appointments, setViewAppointments }) => {
   const [welcomeMessage, setWelcomeMessage] = useState("");
@@ -37,24 +38,8 @@ const ProfileContent = ({ activeTab, setActiveTab, user, appointments, setViewAp
               </div>
             </div>
           </div>
-
           {/* 🔹 Carrusel de novedades */}
-          <div className="mt-6">
-            <h3 className="text-xl font-semibold flex items-center gap-2">
-              <FaNewspaper className="text-blue-500" /> Novedades
-            </h3>
-            <div className="carousel w-full mt-4 rounded-lg overflow-hidden shadow-md">
-              <div className="carousel-item w-full">
-                <img src="/images/news1.jpg" alt="Noticia 1" className="w-full" />
-              </div>
-              <div className="carousel-item w-full">
-                <img src="/images/news2.jpg" alt="Noticia 2" className="w-full" />
-              </div>
-              <div className="carousel-item w-full">
-                <img src="/images/news3.jpg" alt="Noticia 3" className="w-full" />
-              </div>
-            </div>
-          </div>
+          <NewsCarousel />
         </>
       )}
 
