@@ -6,7 +6,7 @@ const ModalComponent = ({ message, onClose }: { message: string; onClose: () => 
   const router = useRouter();
 
   useEffect(() => {
-    if (message.includes("Usuario registrado exitosamente")) {
+    if (message.includes("Cuenta creada con éxito")) {
       const interval = setInterval(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);

@@ -3,9 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useStateContext } from "@/utils/context/StateContext";
-import { FaBars, FaTimes, FaUser, FaGlobe, FaUserPlus } from "react-icons/fa";
-import LoginButton from "../Login/LoginButton";
-import LoginModal from "../Login/LoginModal";
+import { FaBars, FaTimes, FaUser, FaGlobe, FaUserPlus, FaSignInAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 const Header = () => {
@@ -14,7 +12,6 @@ const Header = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -108,7 +105,12 @@ const Header = () => {
                 >
                   <FaUserPlus /> Crear cuenta
                 </button>
-                <LoginButton />
+                <button
+                  onClick={() => router.push("/login")} // 🔹 Redirección a la página de registro
+                  className="btn btn-primary text-white bg-blue-500 hover:bg-blue-600 flex items-center gap-2"
+                >
+                  <FaSignInAlt /> Iniciar Sesión
+                </button>
               </div>
             )}
 
@@ -158,7 +160,12 @@ const Header = () => {
                     >
                       <FaUserPlus /> Crear cuenta
                     </a>
-                    <LoginButton />
+                    <button
+                      onClick={() => router.push("/login")} // 🔹 Redirección a la página de registro
+                      className="btn btn-primary text-white bg-blue-500 hover:bg-blue-600 flex items-center gap-2"
+                    >
+                      <FaSignInAlt /> Iniciar Sesión
+                    </button>
                   </div>
                 )}
               </nav>
@@ -166,7 +173,6 @@ const Header = () => {
           </div>
         )}
       </header>
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </> 
   );
 };

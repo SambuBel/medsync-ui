@@ -7,6 +7,7 @@ import { motion, useAnimation } from "framer-motion";
 import InputField from "@/components/Register/InputField";
 import LoadingComponent from "@/components/common/LoadingComponent";
 import ModalComponent from "@/components/common/ModalComponent";
+import { registerWithFirebase } from "@/firebase/auth";
 
 const BouncingBall = ({ reverse }: { reverse?: boolean }) => {
     const controls = useAnimation();
@@ -67,26 +68,20 @@ const RegisterPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      await registerWithFirebase(formData.email, formData.password, formData);
   
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al registrar usuario");
-  
-      setModalMessage("✅ Usuario registrado exitosamente. Te llegará un correo con la confirmación.");
-      setShowModal(true);      
+      setModalMessage("✅ Cuenta creada con éxito. Por favor, revisa tu correo para verificar tu cuenta.");
+      setShowModal(true);
     } catch (error: any) {
-        setModalMessage(`❌ ${error.message}`);
-        setShowModal(true);
+      setModalMessage(`❌ ${error.message}`);
+      setShowModal(true);
     } finally {
-        setLoading(false);
-      }
+      setLoading(false);
+    }
   };
+  
   
   return (
     <div className="flex h-screen overflow-hidden pb-10 bg-white">
