@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import InputField from "@/components/Register/InputField";
-import SnackBar from "../common/Snackbar";
 import { GenderEnum } from "@/utils/constants/Appointment";
+import SnackBar from "../common/SnackBar";
 
 interface Doctor {
     specialty: string[];

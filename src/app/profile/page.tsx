@@ -63,7 +63,7 @@ export default function ProfilePage() {
       <ProfileContent
         activeTab={activeTab}
         appointments={appointments}
-        setViewAppointments={setViewAppointments} setActiveTab={undefined} user={user}      />
+        setViewAppointments={setViewAppointments} setActiveTab={undefined} user={user}  setUser={setUser}    />
       {viewAppointments && <AppointmentModal isOpen={viewAppointments} onClose={() => setViewAppointments(false)} />}
     </div>
   );

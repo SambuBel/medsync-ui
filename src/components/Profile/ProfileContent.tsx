@@ -4,9 +4,10 @@ import Interconsults from "./Interconsults";
 import NewsCarousel from "./NewsCarousel";
 import PhysicalFitness from "./PhysicalFitness";
 import Prescriptions from "./Prescriptions";
+import ProfileAvatar from "./ProfileAvatar";
 import ProfilePersonalData from "./ProfilePersonalData";
 
-const ProfileContent = ({ activeTab, setActiveTab, user, appointments, setViewAppointments }) => {
+const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, setViewAppointments }) => {
   return (
     <div className="flex-1 p-6 w-full bg-white">
       {/* 🔹 Sección de INICIO */}
@@ -18,14 +19,7 @@ const ProfileContent = ({ activeTab, setActiveTab, user, appointments, setViewAp
               <p className="text-gray-600 mt-2">Aquí puedes gestionar turnos, recetas y más.</p>
             </div>
             {/* 🔹 Avatar DaisyUI */}
-              <div className="avatar">
-              <div className="w-24 rounded-full border border-gray-300 shadow-md">
-                <img
-                  src={user?.profilePicture || "/images/arcane.jpg"}
-                  alt="Foto de perfil"
-                />
-              </div>
-            </div>
+            <ProfileAvatar profileImage={user?.profileImage?.url} setUser={setUser} />
           </div>
           <NewsCarousel />
         </>
