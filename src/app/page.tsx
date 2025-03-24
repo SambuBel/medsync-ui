@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <Layout title="Inicio" navigationPaths={undefined}>
       <Hero />
-      <div className="bg-white w-full gap-12 flex flex-col pt-12">
+      <div className="bg-gray-100 w-full gap-12 flex flex-col pt-12">
         <section id="services">
           <Services />
         </section>

@@ -32,7 +32,7 @@ export const SpecialtyEnum = {
 };
 
 export const RoleEnum = {
-  DOCTOR: "Doctor",
+  DOCTOR: "Profesional",
   PATIENT: "Paciente",
 };
 

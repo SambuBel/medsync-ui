@@ -5,12 +5,19 @@ import ProfileSidebar from "@/components/Profile/ProfileSidebar";
 import ProfileContent from "@/components/Profile/ProfileContent";
 import AppointmentModal from "@/components/AppointmentModal";
 import LoadingComponent from "@/components/Profile/LoadingComponent";
+import { User } from "@/components/Profile/ProfilePersonalData";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("home");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("activeTab") || "home";
+    }
+    return "home";
+  });
+
   const [appointments, setAppointments] = useState([]);
   const [viewAppointments, setViewAppointments] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -63,7 +70,7 @@ export default function ProfilePage() {
       <ProfileContent
         activeTab={activeTab}
         appointments={appointments}
-        setViewAppointments={setViewAppointments} setActiveTab={undefined} user={user}  setUser={setUser}    />
+        setViewAppointments={setViewAppointments} user={user}  setUser={setUser}    />
       {viewAppointments && <AppointmentModal isOpen={viewAppointments} onClose={() => setViewAppointments(false)} />}
     </div>
   );

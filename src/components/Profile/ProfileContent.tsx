@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import ProfileAppointments from "./Appointments";
 import ControlAnalysis from "./ControlAnalysis";
 import Interconsults from "./Interconsults";
@@ -5,9 +6,28 @@ import NewsCarousel from "./NewsCarousel";
 import PhysicalFitness from "./PhysicalFitness";
 import Prescriptions from "./Prescriptions";
 import ProfileAvatar from "./ProfileAvatar";
-import ProfilePersonalData from "./ProfilePersonalData";
+import ProfilePersonalData, { Doctor, User } from "./ProfilePersonalData";
 
-const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, setViewAppointments }) => {
+interface Appointment {
+  id: string;
+  date: string;
+  doctor: Doctor;
+}
+
+interface ProfileContentProps {
+  activeTab: string;
+  user: User;
+  setUser: (user: User) => void;
+  appointments: Appointment[];
+  setViewAppointments: (value: boolean) => void;
+}
+
+const ProfileContent = ({ activeTab, user, setUser, appointments, setViewAppointments } : ProfileContentProps) => {
+
+  useEffect(() => {
+    localStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
+
   return (
     <div className="flex-1 p-6 w-full bg-white">
       {/* 🔹 Sección de INICIO */}
@@ -26,7 +46,7 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       )}
 
       {/* 🔹 Nueva Sección de Datos Personales */}
-      {activeTab === "personalData" && <ProfilePersonalData user={user} />}
+      {activeTab === "personalData-info" && <ProfilePersonalData user={user} />}
 
       {/* 🔹 Otras Secciones */}
       {activeTab === "appointments" && (

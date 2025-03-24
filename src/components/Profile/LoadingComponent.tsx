@@ -16,7 +16,7 @@ const LoadingComponent = () => {
       </motion.div>
 
       {/* 🔹 Mensaje */}
-      <h2 className="text-xl font-semibold">Estamos preparando todo para ti...</h2>
+      <h2 className="text-xl font-semibold">Estamos preparando todo para vos...</h2>
       <p className="text-gray-500 mt-2 text-center px-6 max-w-md">
         Organizando tu perfil para que puedas gestionar tus citas, 
         sacar turnos fácilmente y mantener el control de tus actividades. 

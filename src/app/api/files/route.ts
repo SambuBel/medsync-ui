@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { FileType } from "@/utils/constants/FileType";
 
 export async function POST(req: Request) {
   const token = (await cookies()).get("token")?.value;
-  console.log("LLEGO")
+
   if (!token) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  // 🔹 Leer el archivo del formulario
   const formData = await req.formData();
   const file = formData.get("file") as File;
 
@@ -16,13 +16,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No se ha enviado ningún archivo." }, { status: 400 });
   }
 
-  // 🔹 Subir el archivo al backend
-  const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/files/upload-profile`, {
+  // ✨ Agregamos el tipo de archivo
+  formData.append("fileType", FileType.PROFILE_IMAGE);
+
+  const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/files/upload`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    body: formData, // Enviar el archivo tal como se recibió
+    body: formData,
   });
 
   if (!backendRes.ok) {

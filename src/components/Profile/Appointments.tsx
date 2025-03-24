@@ -3,7 +3,7 @@ import { FaPlusCircle } from 'react-icons/fa'
 
 type ProfileAppointmentsType = {
     appointments: any;
-    setViewAppointments: () => void;
+    setViewAppointments: (value: boolean) => void;
 }
 
 export default function ProfileAppointments({appointments, setViewAppointments} : ProfileAppointmentsType) {

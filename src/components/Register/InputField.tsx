@@ -3,15 +3,17 @@ interface InputFieldProps {
     type?: string;
     name: string;
     value: string;
+    disabled?: boolean;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   }
   
-  const InputField = ({ label, type = "text", name, value, onChange }: InputFieldProps) => {
+  const InputField = ({ label, type = "text", name, value, disabled, onChange }: InputFieldProps) => {
     return (
       <div className="relative w-full group">
         <input
           type={type}
           name={name}
+          disabled={disabled}
           value={value}
           onChange={onChange}
           required
