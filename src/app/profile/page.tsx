@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ProfileSidebar from "@/components/Profile/ProfileSidebar";
 import ProfileContent from "@/components/Profile/ProfileContent";
-import AppointmentModal from "@/components/AppointmentModal";
 import LoadingComponent from "@/components/Profile/LoadingComponent";
 import { User } from "@/components/Profile/ProfilePersonalData";
 
@@ -19,7 +18,6 @@ export default function ProfilePage() {
   });
 
   const [appointments, setAppointments] = useState([]);
-  const [viewAppointments, setViewAppointments] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
@@ -70,8 +68,9 @@ export default function ProfilePage() {
       <ProfileContent
         activeTab={activeTab}
         appointments={appointments}
-        setViewAppointments={setViewAppointments} user={user}  setUser={setUser}    />
-      {viewAppointments && <AppointmentModal isOpen={viewAppointments} onClose={() => setViewAppointments(false)} />}
+        user={user}  setUser={setUser}
+        setActiveTab={setActiveTab}
+      />
     </div>
   );
 }

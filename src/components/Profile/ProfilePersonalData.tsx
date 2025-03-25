@@ -7,6 +7,7 @@ import CollapsibleCard from "../common/CollapsibleCard";
 import { FiUser, FiBriefcase } from "react-icons/fi";
 
 export interface Doctor {
+    id?: string;
     specialty: string[];
     license: string;
     licenseType: string;

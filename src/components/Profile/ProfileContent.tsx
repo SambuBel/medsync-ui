@@ -7,6 +7,7 @@ import PhysicalFitness from "./PhysicalFitness";
 import Prescriptions from "./Prescriptions";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfilePersonalData, { Doctor, User } from "./ProfilePersonalData";
+import MakeAppointment from "./MakeAppointment";
 
 interface Appointment {
   id: string;
@@ -18,11 +19,11 @@ interface ProfileContentProps {
   activeTab: string;
   user: User;
   setUser: (user: User) => void;
+  setActiveTab: (tab: string) => void;
   appointments: Appointment[];
-  setViewAppointments: (value: boolean) => void;
 }
 
-const ProfileContent = ({ activeTab, user, setUser, appointments, setViewAppointments } : ProfileContentProps) => {
+const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments } : ProfileContentProps) => {
 
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
@@ -49,13 +50,12 @@ const ProfileContent = ({ activeTab, user, setUser, appointments, setViewAppoint
       {activeTab === "personalData-info" && <ProfilePersonalData user={user} />}
 
       {/* 🔹 Otras Secciones */}
-      {activeTab === "appointments" && (
-        <ProfileAppointments appointments={appointments} setViewAppointments={setViewAppointments} />
-      )}
       {activeTab === "prescriptions" && <Prescriptions />}
       {activeTab === "interconsults" && <Interconsults />}
       {activeTab === "tests" && <ControlAnalysis />}
       {activeTab === "aptitude" && <PhysicalFitness />}
+      {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} appointments={appointments} />}
+      {activeTab === "make-appointment" && <MakeAppointment /> }
     </div>
   );
 };

@@ -34,7 +34,12 @@ const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, to
 
   const menuItems = [
     { id: "home", label: "Inicio", icon: <FaHome /> },
-    { id: "appointments", label: "Turnos", icon: <FaCalendarAlt /> },
+    { id: "appointments", label: "Turnos", icon: <FaCalendarAlt />,
+      submenu: [
+        { id: "record-appointments", label: "Histórico" },
+        { id: "make-appointment", label: "Sacar turno" },
+      ],
+     },
     { id: "prescriptions", label: "Recetas", icon: <FaFileMedical /> },
     { id: "interconsults", label: "Interconsultas", icon: <FaNotesMedical /> },
     { id: "tests", label: "Análisis", icon: <FaClipboardList /> },
