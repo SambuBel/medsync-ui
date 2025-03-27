@@ -54,3 +54,31 @@ export async function GET() {
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const token = (await cookies()).get("token")?.value;
+    const { id, status } = await req.json();
+
+    if (!token) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!res.ok) {
+      return NextResponse.json({ error: "Error al cancelar el turno" }, { status: res.status });
+    }
+
+    return NextResponse.json(await res.json());
+  } catch (error) {
+    return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
+  }
+}
