@@ -54,6 +54,7 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments }
       {activeTab === "aptitude" && <PhysicalFitness />}
       {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} appointments={appointments} />}
       {activeTab === "make-appointment" && <MakeAppointment /> }
+      {activeTab === "emergency"}
     </div>
   );
 };

@@ -5,7 +5,6 @@ import {
   FaHome,
   FaCalendarAlt,
   FaFileMedical,
-  FaNotesMedical,
   FaClipboardList,
   FaHeartbeat,
   FaUser,
@@ -135,6 +134,17 @@ const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, to
           );
         })}
       </ul>
+      {/* 🔺 Botón para GUARDIA - Separado visualmente */}
+      <div className="p-4 border-t border-gray-700 mt-auto w-full">
+        <button
+          onClick={() => setActiveTab("emergency")}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold 
+            transition-all bg-red-600 hover:bg-red-700 text-white shadow-md 
+            text-sm tracking-wide ${activeTab === "emergency" ? "ring-2 ring-red-300" : ""}`}
+        >
+          🆘 Entrar a Guardia
+        </button>
+      </div>
 
       {/* 🔹 Cierre de sesión */}
       <div className="py-4 border-t border-gray-700 flex items-center flex-col justify-center">

@@ -3,6 +3,7 @@ import { Doctor } from "../ProfilePersonalData";
 import { FaCalendarAlt } from "react-icons/fa";
 import { useState } from "react";
 import NoDoctorsAvailable from "./NoDoctorsAvailable";
+import LoadingComponent from "@/components/common/LoadingComponent";
 
 interface StepSelectDoctorProps {
   doctors: Doctor[];
@@ -46,7 +47,12 @@ const groupSlotsByDay = (slots: any[]) => {
 const StepSelectDoctor = ({ doctors, selectedDoctor, onSelect, loading }: StepSelectDoctorProps) => {
   const [expandedDoctorId, setExpandedDoctorId] = useState<string | null>(null);
 
-  if (loading) return <p className="text-gray-500">Cargando médicos...</p>;
+  if (loading) return (
+    <div className="flex flex-col justify-center w-full">
+      <LoadingComponent />
+      <p className="text-gray-500">Cargando médicos...</p>
+    </div>
+  );
   if (!doctors.length) return <NoDoctorsAvailable />;
 
   return (

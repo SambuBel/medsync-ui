@@ -39,8 +39,8 @@ export default function ProfileAppointments({ appointments, setActiveTab }: Prof
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg">
-      <div className="flex justify-between items-center border-b pb-4 mb-10">
+    <div className="bg-white p-6 rounded-lg flex flex-col items-center">
+      <div className="flex justify-between items-center border-b pb-4 mb-10 w-full">
         <h3 className="text-3xl font-bold text-gray-800 flex items-center gap-2">Mis Turnos</h3>
         <button
           className="btn btn-primary flex items-center gap-2 bg-sky-500 text-white"
@@ -53,68 +53,68 @@ export default function ProfileAppointments({ appointments, setActiveTab }: Prof
       {appointments.length === 0 ? (
         <p className="text-gray-600 mt-2">No tienes turnos programados.</p>
       ) : (
-            <div className="overflow-visible text-gray-600">
-              <table className="table border border-gray-300 rounded-t-xl overflow-hidden bg-white shadow-sm z-10">
-                <thead className="bg-sky-500 text-white text-sm">
-                    <tr>
-                    <th className="px-4 py-3 text-left">Profesional</th>
-                    <th className="px-4 py-3 text-left">Especialidad</th>
-                    <th className="px-4 py-3 text-left">Fecha</th>
-                    <th className="px-4 py-3 text-left">Estado</th>
-                    {appointments.some(a => a.status !== "CANCELED") && (
-                        <th className="px-4 py-3 text-left">Opciones</th>
-                    )}
+          <div className="overflow-visible text-gray-600 max-w-screen-xl w-full">
+            <table className="table border border-gray-300 rounded-t-xl overflow-hidden bg-white shadow-sm z-10">
+              <thead className="bg-sky-500 text-white text-sm">
+                  <tr>
+                  <th className="px-4 py-3 text-left">Profesional</th>
+                  <th className="px-4 py-3 text-left">Especialidad</th>
+                  <th className="px-4 py-3 text-left">Fecha</th>
+                  <th className="px-4 py-3 text-left">Estado</th>
+                  {appointments.some(a => a.status !== "CANCELED") && (
+                      <th className="px-4 py-3 text-left">Opciones</th>
+                  )}
+                  </tr>
+              </thead>
+              <tbody>
+                  {appointments.map((appt) => (
+                    <tr key={`appointment-${appt.doctor.user.email}-${appt.date}`} className="hover:bg-gray-50 border-b border-gray-200">
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <div className="avatar">
+                              <div className="mask mask-squircle h-12 w-12">
+                              <img
+                                  src={appt.doctor.user.profileImage?.url || "/images/avatar-default.png"}
+                                  alt="Avatar del profesional"
+                              />
+                              </div>
+                          </div>
+                        <div>
+                          <div className="font-bold">
+                          {appt.doctor.user.name} {appt.doctor.user.lastName}
+                          </div>
+                        </div>
+                        </div>
+                      </td>
+                      <td>{SpecialtyEnum[appt.specialty]}</td>
+                      <td>{formatLocalDateTime(appt.date)}</td>
+                      <td>
+                          <AppointmentStatusPill status={appt.status} />
+                      </td>
+                      {appt.status !== "CANCELED" && (
+                          <td className="text-end">
+                          <div className="dropdown dropdown-end z-40">
+                          <button className="text-gray-500 hover:text-gray-700">
+                              <FaEllipsisV />
+                          </button>
+                          <ul className="dropdown-content menu absolute right-0 mt-1  border w-[150px] rounded shadow z-50 bg-white">
+                              <li className="w-full">
+                              <button
+                              onClick={() => setSelectedAppointmentId(appt.id)}
+                                  className="text-red-500"
+                              >
+                                  Cancelar turno
+                              </button>
+                              </li>
+                          </ul>
+                          </div>
+                          </td>
+                      )}
                     </tr>
-                </thead>
-                <tbody>
-                    {appointments.map((appt) => (
-                      <tr key={`appointment-${appt.doctor.user.email}-${appt.date}`} className="hover:bg-gray-50 border-b border-gray-200">
-                        <td>
-                          <div className="flex items-center gap-3">
-                            <div className="avatar">
-                                <div className="mask mask-squircle h-12 w-12">
-                                <img
-                                    src={appt.doctor.user.profileImage?.url || "/images/avatar-default.png"}
-                                    alt="Avatar del profesional"
-                                />
-                                </div>
-                            </div>
-                          <div>
-                            <div className="font-bold">
-                            {appt.doctor.user.name} {appt.doctor.user.lastName}
-                            </div>
-                          </div>
-                          </div>
-                        </td>
-                        <td>{SpecialtyEnum[appt.specialty]}</td>
-                        <td>{formatLocalDateTime(appt.date)}</td>
-                        <td>
-                            <AppointmentStatusPill status={appt.status} />
-                        </td>
-                        {appt.status !== "CANCELED" && (
-                            <td className="text-end">
-                            <div className="dropdown dropdown-end z-40">
-                            <button className="text-gray-500 hover:text-gray-700">
-                                <FaEllipsisV />
-                            </button>
-                            <ul className="dropdown-content menu absolute right-0 mt-1  border w-[150px] rounded shadow z-50 bg-white">
-                                <li className="w-full">
-                                <button
-                                onClick={() => setSelectedAppointmentId(appt.id)}
-                                    className="text-red-500"
-                                >
-                                    Cancelar turno
-                                </button>
-                                </li>
-                            </ul>
-                            </div>
-                            </td>
-                        )}
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+                  ))}
+              </tbody>
+            </table>
+          </div>
       )}
       {selectedAppointmentId && (
         <dialog id="cancelModal" className="modal modal-open">

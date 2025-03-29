@@ -23,6 +23,9 @@ export default {
           to: { opacity: 1 },
         },
       },
+      fontFamily: {
+        sans: ["var(--font-manrope)", "sans-serif"],
+      },
     },
   },
   plugins: [require("daisyui")],
