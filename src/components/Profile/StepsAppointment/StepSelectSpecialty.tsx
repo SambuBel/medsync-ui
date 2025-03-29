@@ -17,9 +17,9 @@ const StepSelectSpecialty = ({ selected, onSelect }: StepSelectSpecialtyProps) =
           key={key}
           onClick={() => onSelect(key)}
           className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl shadow-md transition-all border-2
-            ${selected === key ? "bg-blue-100 border-blue-500" : "bg-white border-gray-200 hover:bg-blue-50"}`}
+            ${selected === key ? "bg-blue-100 border-sky-500" : "bg-white border-gray-200 hover:bg-blue-50"}`}
         >
-          <div className="text-3xl text-blue-600">
+          <div className="text-3xl text-sky-500">
             {SpecialtyIcons[key] || <FaUserMd />}
           </div>
           <span className="text-sm font-semibold text-gray-800 text-center">{label}</span>

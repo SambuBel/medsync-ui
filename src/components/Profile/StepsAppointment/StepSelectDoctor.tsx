@@ -1,42 +1,60 @@
 import { SpecialtyEnum } from "@/utils/constants/Appointment";
 import { Doctor } from "../ProfilePersonalData";
 import { FaCalendarAlt } from "react-icons/fa";
-import { generateHalfHourIntervals } from "@/utils/generateTime";
 import { useState } from "react";
+import NoDoctorsAvailable from "./NoDoctorsAvailable";
 
 interface StepSelectDoctorProps {
   doctors: Doctor[];
   selectedDoctor: Doctor | null;
-  onSelect: (doctor: Doctor, time: string, dayOfWeek: number) => void;  
+  onSelect: (doctor: Doctor, time: string, dayOfWeek: number, date: string) => void;
   loading: boolean;
 }
 
 const getTitleByGender = (gender: string) => {
-  if (gender === "FEMALE") return "Dra.";
-  return "Dr.";
+  return gender === "FEMALE" ? "Dra." : "Dr.";
 };
+
+const daysOfWeek = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+// Agrupar los turnos por fecha visible (ej: lunes, 31 de marzo de 2025)
+const groupSlotsByDay = (slots: any[]) => {
+  const grouped: { [key: string]: { label: string; slots: typeof slots } } = {};
+
+  slots.forEach((slot) => {
+    const date = new Date(slot.date);
+    const key = date.toISOString().split("T")[0]; // YYYY-MM-DD
+    const label = date.toLocaleDateString("es-AR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+    if (!grouped[key]) {
+      grouped[key] = { label, slots: [] };
+    }
+
+    grouped[key].slots.push(slot);
+  });
+
+  return grouped;
+};
+
+
 
 const StepSelectDoctor = ({ doctors, selectedDoctor, onSelect, loading }: StepSelectDoctorProps) => {
   const [expandedDoctorId, setExpandedDoctorId] = useState<string | null>(null);
 
   if (loading) return <p className="text-gray-500">Cargando médicos...</p>;
-  if (!doctors.length) return <p className="text-gray-500">No hay médicos disponibles.</p>;
-
-  const daysOfWeek = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-  const isToday = (dayOfWeek: number) => new Date().getDay() === dayOfWeek;
+  if (!doctors.length) return <NoDoctorsAvailable />;
 
   return (
     <div className="flex flex-col gap-4 mt-4">
       {doctors.map((doctor) => {
-        const availability = doctor.availabilities?.[0];
-        const slots = availability ? generateHalfHourIntervals(availability.startTime, availability.endTime) : [];
-        const nextSlot = slots[0];
-        const dayLabel = availability
-          ? isToday(availability.dayOfWeek)
-            ? "Hoy"
-            : daysOfWeek[availability.dayOfWeek]
-          : "";
+        const nextSlot = doctor.availableSlots?.[0];
         const isExpanded = expandedDoctorId === doctor.id;
+        const groupedSlots = groupSlotsByDay(doctor.availableSlots || []);
 
         return (
           <div
@@ -50,7 +68,7 @@ const StepSelectDoctor = ({ doctors, selectedDoctor, onSelect, loading }: StepSe
               <div className="avatar">
                 <div className="w-14 rounded-full">
                   <img
-                    src={doctor?.user?.profileImage?.url || "/images/default-avatar.png"}
+                    src={doctor?.user?.profileImage?.url || "/images/avatar-default.png"}
                     alt="Foto profesional"
                   />
                 </div>
@@ -59,41 +77,51 @@ const StepSelectDoctor = ({ doctors, selectedDoctor, onSelect, loading }: StepSe
                 <p className="text-lg font-bold text-gray-800">
                   {getTitleByGender(doctor.user.gender)} {doctor.user.name} {doctor.user.lastName}
                 </p>
-                <p className="text-sm text-gray-600">{SpecialtyEnum[doctor.specialty[0]] || doctor.specialty[0]}</p>
+                <p className="text-sm text-gray-600">
+                  {SpecialtyEnum[doctor.specialty[0]] || doctor.specialty[0]}
+                </p>
               </div>
             </div>
 
             <div className="hidden md:block w-px h-16 bg-gray-300" />
 
+            {/* Turnos disponibles */}
             <div className="w-full md:w-1/2">
-              {availability && nextSlot && (
+              {nextSlot && (
                 <button
-                onClick={() => onSelect(doctor, nextSlot, availability.dayOfWeek)}
-                className="flex items-center gap-2 px-3 py-2 rounded-md border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-200 text-sm mb-2 transition-all"
+                  onClick={() => onSelect(doctor, nextSlot.time, nextSlot.dayOfWeek, nextSlot.date)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-blue-300 bg-blue-50 text-sky-500 text-sm mb-2 transition-all hover:bg-sky-500 hover:text-white"
                 >
-                  <FaCalendarAlt /> Próximo turno: {dayLabel} a las {nextSlot} hs
+                  <FaCalendarAlt /> Próximo turno: {daysOfWeek[nextSlot.dayOfWeek]} a las {nextSlot.time} hs
                 </button>
               )}
 
-              {availability && (
+              {doctor.availableSlots?.length > 1 && (
                 <button
                   onClick={() => setExpandedDoctorId(isExpanded ? null : doctor.id)}
-                  className="text-blue-600 text-sm mb-2 hover:underline transition-all"
+                  className="text-sky-600 text-sm mb-2 hover:underline transition-all"
                 >
                   {isExpanded ? "Ocultar horarios ▲" : "Ver más horarios ▼"}
                 </button>
               )}
 
               {isExpanded && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 animate-fadeIn">
-                  {slots.map((slot, i) => (
-                    <button
-                      key={i}
-                      onClick={() => onSelect(doctor, slot, availability.dayOfWeek)}
-                      className="flex items-center gap-2 px-1 py-1 text-xs rounded-md border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-200 transition-all"
-                    >
-                      {slot} HS
-                    </button>
+                <div className="animate-fadeIn space-y-4">
+                  {Object.entries(groupedSlots).map(([dateKey, group]) => (
+                    <div key={dateKey}>
+                      <p className="text-sm font-semibold text-gray-700 mb-2">🗓️ {group.label}</p>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        {group.slots.map((slot, i) => (
+                          <button
+                            key={i}
+                            onClick={() => onSelect(doctor, slot.time, slot.dayOfWeek, slot.date)}
+                            className="flex whitespace-nowrap items-center gap-2 px-1 py-1 text-xs rounded-md border border-blue-300 bg-blue-50 text-sky-500 hover:bg-sky-500 hover:text-white transition-all min-w-[55px]"
+                          >
+                            {slot.time} hs
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}

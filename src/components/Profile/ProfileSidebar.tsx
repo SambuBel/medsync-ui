@@ -41,7 +41,6 @@ const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, to
       ],
      },
     { id: "prescriptions", label: "Recetas", icon: <FaFileMedical /> },
-    { id: "interconsults", label: "Interconsultas", icon: <FaNotesMedical /> },
     { id: "tests", label: "Análisis", icon: <FaClipboardList /> },
     { id: "aptitude", label: "Aptitud Física", icon: <FaHeartbeat /> },
     {

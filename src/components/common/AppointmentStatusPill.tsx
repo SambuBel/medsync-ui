@@ -21,17 +21,17 @@ const statusLabelMap: Record<AppointmentStatus, string> = {
 };
 
 const statusColorMap: Record<AppointmentStatus, string> = {
-  PENDING: "badge-warning text-yellow-700",
+  PENDING: "badge-warning text-yellow-700 border border-yellow-800",
   CONFIRMED: "badge-success text-green-700",
-  CANCELED: "badge-error text-red-700",
+  CANCELED: "bg-gray-400 text-white border-gray-500",
   RESCHEDULED: "badge-info text-blue-700",
   COMPLETED: "badge-success"
 };
 
 const AppointmentStatusPill = ({ status }: Props) => {
   return (
-    <span className={` font-semibold badge ${statusColorMap[status]} capitalize`}>
-      {statusLabelMap[status]}
+    <span className={`badge p-3 text-xs tracking-widest ${statusColorMap[status]} capitalize `}>
+      {statusLabelMap[status].toUpperCase()}
     </span>
   );
 };

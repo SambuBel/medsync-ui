@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import ProfileAppointments from "./Appointments";
 import ControlAnalysis from "./ControlAnalysis";
-import Interconsults from "./Interconsults";
 import NewsCarousel from "./NewsCarousel";
 import PhysicalFitness from "./PhysicalFitness";
 import Prescriptions from "./Prescriptions";
@@ -51,7 +50,6 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments }
 
       {/* 🔹 Otras Secciones */}
       {activeTab === "prescriptions" && <Prescriptions />}
-      {activeTab === "interconsults" && <Interconsults />}
       {activeTab === "tests" && <ControlAnalysis />}
       {activeTab === "aptitude" && <PhysicalFitness />}
       {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} appointments={appointments} />}

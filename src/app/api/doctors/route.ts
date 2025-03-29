@@ -12,7 +12,17 @@ export async function GET(req: Request) {
     }
 
     const doctors = await res.json();
-    return NextResponse.json(doctors);
+
+    // 🔹 Fetch disponibilidad semanal para cada doctor
+    const enrichedDoctors = await Promise.all(
+      doctors.map(async (doctor: any) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor.id}/weekly-availability?specialty=${specialty}`);
+        const availableSlots = await response.json();
+        return { ...doctor, availableSlots };
+      })
+    );
+
+    return NextResponse.json(enrichedDoctors);
   } catch (error) {
     console.error("Error en API de médicos:", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
