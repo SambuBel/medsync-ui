@@ -92,23 +92,40 @@ export default function ProfileAppointments({ appointments, setActiveTab }: Prof
                           <AppointmentStatusPill status={appt.status} />
                       </td>
                       {appt.status !== "CANCELED" && (
-                          <td className="text-end">
-                          <div className="dropdown dropdown-end z-40">
-                          <button className="text-gray-500 hover:text-gray-700">
-                              <FaEllipsisV />
-                          </button>
-                          <ul className="dropdown-content menu absolute right-0 mt-1  border w-[150px] rounded shadow z-50 bg-white">
-                              <li className="w-full">
-                              <button
+                      <td className="text-end relative">
+                      <div className="dropdown dropdown-end">
+                        <button tabIndex={0} className="text-gray-500 hover:text-gray-700">
+                          <FaEllipsisV />
+                        </button>
+                        <ul
+                          tabIndex={0}
+                          className="dropdown-content menu absolute right-0 mt-1 border w-[160px] rounded-md shadow z-50 bg-white"
+                        >
+                          <li>
+                            <button
                               onClick={() => setSelectedAppointmentId(appt.id)}
-                                  className="text-red-500"
-                              >
-                                  Cancelar turno
-                              </button>
+                              className="text-red-500 px-4 py-2 text-left hover:bg-red-50"
+                            >
+                              Cancelar turno
+                            </button>
+                          </li>
+                          {new Date(appt.date) <= new Date(new Date().getTime() + 30 * 60000) &&
+                            new Date(appt.date) >= new Date(new Date().getTime() - 15 * 60000) && (
+                              <li>
+                                <button
+                                  onClick={() => {
+                                    setActiveTab("emergency"); // o a una página específica del turno
+                                  }}
+                                  className="text-green-600 px-4 py-2 text-left hover:bg-green-50"
+                                >
+                                  Ingresar a consulta
+                                </button>
                               </li>
-                          </ul>
-                          </div>
-                          </td>
+                          )}
+                        </ul>
+                      </div>
+                      </td>
+                    
                       )}
                     </tr>
                   ))}

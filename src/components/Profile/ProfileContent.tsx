@@ -7,11 +7,15 @@ import Prescriptions from "./Prescriptions";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfilePersonalData, { Doctor, User } from "./ProfilePersonalData";
 import MakeAppointment from "./MakeAppointment";
+import GuardiaPage from "../GuardiaPage";
+import { isTimeForAppointment } from "./utils/isTimeForAppointmen";
+import GuardiaFormPage from "../Guardia/GuardiaFormPage";
 
 interface Appointment {
   id: string;
   date: string;
   doctor: Doctor;
+  status: 'CANCELED' | 'PENDING'
 }
 
 interface ProfileContentProps {
@@ -41,6 +45,19 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments }
             {/* 🔹 Avatar DaisyUI */}
             <ProfileAvatar profileImage={user?.profileImage?.url} setUser={setUser} />
           </div>
+          {appointments.some(a =>
+            isTimeForAppointment(a.date) && a.status !== "CANCELED"
+          ) && (
+            <div className="bg-green-50 border-l-4 border-green-600 p-4 rounded mb-4 text-green-900">
+              <p className="text-md font-semibold">🩺 Tienes una consulta en breve</p>
+              <button
+                onClick={() => setActiveTab("emergency")}
+                className="mt-2 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+              >
+                Ingresar ahora
+              </button>
+            </div>
+          )}
           <NewsCarousel />
         </>
       )}
@@ -54,7 +71,10 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments }
       {activeTab === "aptitude" && <PhysicalFitness />}
       {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} appointments={appointments} />}
       {activeTab === "make-appointment" && <MakeAppointment /> }
-      {activeTab === "emergency"}
+      {activeTab === "emergency" && (
+        <GuardiaFormPage />
+      )}
+
     </div>
   );
 };

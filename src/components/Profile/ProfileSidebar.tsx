@@ -35,12 +35,12 @@ const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, to
     { id: "home", label: "Inicio", icon: <FaHome /> },
     { id: "appointments", label: "Turnos", icon: <FaCalendarAlt />,
       submenu: [
-        { id: "record-appointments", label: "Histórico" },
+        { id: "record-appointments", label: "Historial" },
         { id: "make-appointment", label: "Sacar turno" },
       ],
      },
     { id: "prescriptions", label: "Recetas", icon: <FaFileMedical /> },
-    { id: "tests", label: "Análisis", icon: <FaClipboardList /> },
+    { id: "tests", label: "Estudios", icon: <FaClipboardList /> },
     { id: "aptitude", label: "Aptitud Física", icon: <FaHeartbeat /> },
     {
       id: "personalData",
@@ -135,16 +135,18 @@ const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, to
         })}
       </ul>
       {/* 🔺 Botón para GUARDIA - Separado visualmente */}
-      <div className="p-4 border-t border-gray-700 mt-auto w-full">
+      <div className="p-4 border-t border-gray-700 mt-auto w-full flex justify-center">
         <button
           onClick={() => setActiveTab("emergency")}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold 
-            transition-all bg-red-600 hover:bg-red-700 text-white shadow-md 
-            text-sm tracking-wide ${activeTab === "emergency" ? "ring-2 ring-red-300" : ""}`}
+          className={`flex items-center gap-2  rounded-lg font-semibold 
+            transition-all bg-red-500 border border-red-600 hover:bg-red-700 text-white shadow-md 
+            text-sm tracking-wide w-full ${activeTab === "emergency" ? "ring-2 ring-red-300" : ""}`}
         >
-          🆘 Entrar a Guardia
+          <span className={`text-lg ${isCollapsed ? 'p-2' : 'px-4 py-3'}`}>🆘</span>
+          {!isCollapsed && <span>Entrar a Guardia</span>}
         </button>
       </div>
+
 
       {/* 🔹 Cierre de sesión */}
       <div className="py-4 border-t border-gray-700 flex items-center flex-col justify-center">

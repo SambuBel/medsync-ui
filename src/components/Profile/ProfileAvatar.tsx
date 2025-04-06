@@ -63,7 +63,7 @@ const ProfileAvatar = ({ profileImage, setUser }: ProfileAvatarProps) => {
       <div className="relative group cursor-pointer" onClick={() => setIsModalOpen(true)}>
         <div className="w-24 h-24 rounded-full border-2 border-gray-300 shadow-lg overflow-hidden transition-all duration-300 transform hover:scale-105">
           <img
-            src={profileImage || "/images/default-avatar.jpg"}
+            src={profileImage || "/images/avatar-default.png"}
             alt="Foto de perfil"
             className="w-full h-full object-cover"
           />
