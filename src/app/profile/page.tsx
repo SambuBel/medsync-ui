@@ -18,6 +18,7 @@ export default function ProfilePage() {
   });
 
   const [appointments, setAppointments] = useState([]);
+  const [emergencies, setEmergencies] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
@@ -35,17 +36,17 @@ export default function ProfilePage() {
       setLoading(false);
     }
 
-    async function fetchAppointments() {
-      const res = await fetch("/api/appointments");
-
+    async function fetchConsultations() {
+      const res = await fetch("/api/consultations");
       if (res.ok) {
-        const data = await res.json();
-        setAppointments(data);
+        const { appointments, emergencyVisits } = await res.json();
+        setAppointments(appointments);
+        setEmergencies(emergencyVisits);
       }
     }
 
     fetchProfile();
-    fetchAppointments();
+    fetchConsultations();
   }, [router]);
 
   const handleLogout = async () => {
@@ -68,6 +69,7 @@ export default function ProfilePage() {
       <ProfileContent
         activeTab={activeTab}
         appointments={appointments}
+        emergencyVisits={emergencies}
         user={user}  setUser={setUser}
         setActiveTab={setActiveTab}
       />

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import ProfileAppointments from "./Appointments";
+import ProfileAppointments from "./ConsultationsView";
 import ControlAnalysis from "./ControlAnalysis";
 import NewsCarousel from "./NewsCarousel";
 import PhysicalFitness from "./PhysicalFitness";
@@ -7,9 +7,9 @@ import Prescriptions from "./Prescriptions";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfilePersonalData, { Doctor, User } from "./ProfilePersonalData";
 import MakeAppointment from "./MakeAppointment";
-import GuardiaPage from "../GuardiaPage";
 import { isTimeForAppointment } from "./utils/isTimeForAppointmen";
 import GuardiaFormPage from "../Guardia/GuardiaFormPage";
+import { EmergencyVisit } from "./utils/constants";
 
 interface Appointment {
   id: string;
@@ -24,9 +24,10 @@ interface ProfileContentProps {
   setUser: (user: User) => void;
   setActiveTab: (tab: string) => void;
   appointments: Appointment[];
+  emergencyVisits: EmergencyVisit[]
 }
 
-const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments } : ProfileContentProps) => {
+const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, emergencyVisits } : ProfileContentProps) => {
 
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
@@ -69,7 +70,7 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments }
       {activeTab === "prescriptions" && <Prescriptions />}
       {activeTab === "tests" && <ControlAnalysis />}
       {activeTab === "aptitude" && <PhysicalFitness />}
-      {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} appointments={appointments} />}
+      {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} emergencyVisits={emergencyVisits} appointments={appointments} />}
       {activeTab === "make-appointment" && <MakeAppointment /> }
       {activeTab === "emergency" && (
         <GuardiaFormPage />

@@ -56,7 +56,7 @@ export default function GuardiaRoomPage() {
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Guardia Virtual</h2>
         <JitsiMeet
           roomName={roomData.roomName}
-          server={roomData.server}
+          server="https://localhost:8443"
           displayName={roomData.displayName}
           email={roomData.email}
         />

@@ -22,3 +22,26 @@ export type Appointment = {
     };
   };
   
+
+export type EmergencyVisitStatus = "WAITING" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+
+export type EmergencyVisit = {
+  id: string;
+  createdAt: string;
+  attendedAt?: string | null;
+  finishedAt?: string | null;
+  status: EmergencyVisitStatus;
+  symptoms: string[];
+  otherSymptoms?: string | null;
+  triageLevel?: number | null;
+
+  patient: {
+    id: string;
+    user: User;
+  };
+
+  doctor?: {
+    id: string;
+    user: User;
+  } | null;
+};
