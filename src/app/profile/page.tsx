@@ -65,6 +65,7 @@ export default function ProfilePage() {
         handleLogout={handleLogout}
         isCollapsed={isCollapsed}
         toggleSidebar={toggleSidebar}
+        role={user.role}
       />
       <ProfileContent
         activeTab={activeTab}

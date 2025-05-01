@@ -5,18 +5,12 @@ import NewsCarousel from "./NewsCarousel";
 import PhysicalFitness from "./PhysicalFitness";
 import Prescriptions from "./Prescriptions";
 import ProfileAvatar from "./ProfileAvatar";
-import ProfilePersonalData, { Doctor, User } from "./ProfilePersonalData";
+import ProfilePersonalData, { User } from "./ProfilePersonalData";
 import MakeAppointment from "./MakeAppointment";
 import { isTimeForAppointment } from "./utils/isTimeForAppointmen";
 import GuardiaFormPage from "../Guardia/GuardiaFormPage";
-import { EmergencyVisit } from "./utils/constants";
-
-interface Appointment {
-  id: string;
-  date: string;
-  doctor: Doctor;
-  status: 'CANCELED' | 'PENDING'
-}
+import { EmergencyVisit, Appointment } from "./utils/constants";
+import DoctorConsultations from "./DoctorConsultations";
 
 interface ProfileContentProps {
   activeTab: string;
@@ -74,6 +68,9 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       {activeTab === "make-appointment" && <MakeAppointment /> }
       {activeTab === "emergency" && (
         <GuardiaFormPage />
+      )}
+      {activeTab === "active-consultations" && (
+        <DoctorConsultations />
       )}
 
     </div>

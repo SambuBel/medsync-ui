@@ -51,7 +51,6 @@ export default function ConsultationsView({
         appointments={appointments}
         emergencyVisits={emergencyVisits}
         setSelectedAppointmentId={setSelectedAppointmentId}
-        setActiveTab={setActiveTab}
       />
 
       {selectedAppointmentId && (

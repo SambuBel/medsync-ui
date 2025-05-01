@@ -2,16 +2,11 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import {
-  FaHome,
-  FaCalendarAlt,
-  FaFileMedical,
-  FaClipboardList,
-  FaHeartbeat,
-  FaUser,
   FaSignOutAlt,
   FaBars,
   FaChevronDown,
 } from "react-icons/fa";
+import { patientMenu, doctorMenu } from "./utils/sidebarMenus"; 
 
 type ProfileSidebarProps = {
   activeTab: string;
@@ -19,9 +14,10 @@ type ProfileSidebarProps = {
   handleLogout: () => void;
   isCollapsed: boolean;
   toggleSidebar: () => void;
+  role: "PATIENT" | "DOCTOR" | "ADMIN";
 };
 
-const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, toggleSidebar } : ProfileSidebarProps) => {
+const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, toggleSidebar, role } : ProfileSidebarProps) => {
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: string]: boolean }>({});
 
   const toggleSubmenu = (id: string) => {
@@ -31,27 +27,7 @@ const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, to
     }));
   };
 
-  const menuItems = [
-    { id: "home", label: "Inicio", icon: <FaHome /> },
-    { id: "appointments", label: "Turnos", icon: <FaCalendarAlt />,
-      submenu: [
-        { id: "record-appointments", label: "Historial" },
-        { id: "make-appointment", label: "Sacar turno" },
-      ],
-     },
-    { id: "prescriptions", label: "Recetas", icon: <FaFileMedical /> },
-    { id: "tests", label: "Estudios", icon: <FaClipboardList /> },
-    { id: "aptitude", label: "Aptitud Física", icon: <FaHeartbeat /> },
-    {
-      id: "personalData",
-      label: "Mi perfil",
-      icon: <FaUser />,
-      submenu: [
-        { id: "personalData-info", label: "Datos personales" },
-        { id: "personalData-docs", label: "Documentación" },
-      ],
-    },
-  ];  
+  const menuItems = role === "DOCTOR" ? doctorMenu : patientMenu;
 
   return (
     <div
@@ -134,19 +110,20 @@ const ProfileSidebar = ({ activeTab, setActiveTab, handleLogout, isCollapsed, to
           );
         })}
       </ul>
-      {/* 🔺 Botón para GUARDIA - Separado visualmente */}
-      <div className="p-4 border-t border-gray-700 mt-auto w-full flex justify-center">
-        <button
-          onClick={() => setActiveTab("emergency")}
-          className={`flex items-center gap-2  rounded-lg font-semibold 
-            transition-all bg-red-500 border border-red-600 hover:bg-red-700 text-white shadow-md 
-            text-sm tracking-wide w-full ${activeTab === "emergency" ? "ring-2 ring-red-300" : ""}`}
-        >
-          <span className={`text-lg ${isCollapsed ? 'p-2' : 'px-4 py-3'}`}>🆘</span>
-          {!isCollapsed && <span>Entrar a Guardia</span>}
-        </button>
-      </div>
-
+      {/* 🔺 Botón para GUARDIA - Solo para pacientes */}
+      {role === "PATIENT" && (
+        <div className="p-4 border-t border-gray-700 mt-auto w-full flex justify-center">
+          <button
+            onClick={() => setActiveTab("emergency")}
+            className={`flex items-center gap-2 rounded-lg font-semibold 
+              transition-all bg-red-500 border border-red-600 hover:bg-red-700 text-white shadow-md 
+              text-sm tracking-wide w-full ${activeTab === "emergency" ? "ring-2 ring-red-300" : ""}`}
+          >
+            <span className={`text-lg ${isCollapsed ? 'p-2' : 'px-4 py-3'}`}>🆘</span>
+            {!isCollapsed && <span>Entrar a Guardia</span>}
+          </button>
+        </div>
+      )}
 
       {/* 🔹 Cierre de sesión */}
       <div className="py-4 border-t border-gray-700 flex items-center flex-col justify-center">
