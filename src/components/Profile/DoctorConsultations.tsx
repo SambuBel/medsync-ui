@@ -110,20 +110,6 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
     ? consultations 
     : consultations.filter(c => c.type === activeFilter);
 
-  const handleJoinConsultation = async (roomName: string) => {
-    try {
-      const res = await fetch(`/api/guardia/join/${roomName}`, {
-        method: 'POST',
-      });
-      if (!res.ok) throw new Error('Error al unirse a la consulta');
-      const data = await res.json();
-      // Aquí podrías redirigir a la sala de videollamada o manejar la respuesta
-      window.location.href = `/guardia/${data.roomName}`;
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
   const toggleExpand = (id: string) => {
     setExpandedConsultation(expandedConsultation === id ? null : id);
   };

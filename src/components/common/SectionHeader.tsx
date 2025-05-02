@@ -1,18 +1,20 @@
 import { ReactNode } from 'react';
-import ProfileAvatar from '../Profile/ProfileAvatar';
 import { User } from '../Profile/ProfilePersonalData';
+import ProfileAvatar from '../Profile/ProfileAvatar';
+
 interface SectionHeaderProps {
   title: string;
   description: string;
   icon: ReactNode;
   profileImage?: string;
   setUser?: (user: User) => void;
+  children?: React.ReactNode;
 }
 
-const SectionHeader = ({ title, description, icon, profileImage, setUser }: SectionHeaderProps) => {
+const SectionHeader = ({ title, description, icon, profileImage, setUser, children }: SectionHeaderProps) => {
   return (
-    <div className="bg-white border-b">
-      <div className="p-6 max-w-7xl mx-auto flex justify-between items-center">
+    <div className="bg-white border-b w-full">
+      <div className="p-6 flex justify-between items-start w-full gap-6">
         <div className="flex items-center gap-4">
           <span className="text-2xl">{icon}</span>
           <div>
@@ -20,8 +22,10 @@ const SectionHeader = ({ title, description, icon, profileImage, setUser }: Sect
             <p className="text-gray-600 mt-1">{description}</p>
           </div>
         </div>
-        {/* Avatar siempre visible */}
-        {setUser && <ProfileAvatar profileImage={profileImage} setUser={setUser} />}
+        <div className="flex items-center gap-4">
+          {children && <div className="self-center">{children}</div>}
+          {setUser && <ProfileAvatar profileImage={profileImage} setUser={setUser} />}
+        </div>
       </div>
     </div>
   );

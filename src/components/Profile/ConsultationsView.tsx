@@ -1,17 +1,24 @@
 import { useState } from "react";
 import { Appointment, EmergencyVisit } from "./utils/constants";
 import MyConsultationsTabs from "./MyConsultationsTabs";
+import SectionHeader from "../common/SectionHeader";
+import { FaCalendarAlt } from "react-icons/fa";
+import { User } from "./ProfilePersonalData";
 
 type ProfileViewProps = {
   appointments: Appointment[];
   emergencyVisits: EmergencyVisit[];
   setActiveTab: (tab: string) => void;
+  user: User;
+  setUser: (user: User) => void;
 };
 
 export default function ConsultationsView({
   appointments,
   emergencyVisits,
   setActiveTab,
+  user,
+  setUser,
 }: ProfileViewProps) {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,15 +43,22 @@ export default function ConsultationsView({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-      <div className="flex justify-between items-center border-b pb-4 mb-6">
-        <h3 className="text-3xl font-bold text-gray-800">Mis Consultas</h3>
-        <button
-          className="btn btn-primary bg-sky-500 text-white hover:bg-sky-600"
-          onClick={() => setActiveTab("make-appointment")}
+    <div className="bg-white p-6 rounded-lg">
+      <div className="flex justify-between items-center pb-4 mb-6">
+        <SectionHeader
+          title="Mis Consultas"
+          description="Gestiona tus consultas y visitas de emergencia"
+          icon={<FaCalendarAlt className="text-sky-500" />}
+          profileImage={user?.profileImage?.url}
+          setUser={setUser}
         >
-          <span className="mr-2">➕</span> Agendar consulta
-        </button>
+          <button
+            className="btn btn-primary bg-sky-500 text-white hover:bg-sky-600"
+            onClick={() => setActiveTab("make-appointment")}
+          >
+            <span className="mr-2">➕</span> Agendar consulta
+          </button>
+        </SectionHeader>
       </div>
 
       <MyConsultationsTabs
