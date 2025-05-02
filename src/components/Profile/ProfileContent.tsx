@@ -5,8 +5,7 @@ import ControlAnalysis from "./ControlAnalysis";
 import NewsCarousel from "./NewsCarousel";
 import PhysicalFitness from "./PhysicalFitness";
 import Prescriptions from "./Prescriptions";
-import ProfileAvatar from "./ProfileAvatar";
-import ProfilePersonalData, { User } from "./ProfilePersonalData";
+import ProfilePersonalData from "./ProfilePersonalData";
 import MakeAppointment from "./MakeAppointment";
 import { isTimeForAppointment } from "./utils/isTimeForAppointmen";
 import GuardiaFormPage from "../Guardia/GuardiaFormPage";
@@ -14,6 +13,8 @@ import { EmergencyVisit, Appointment } from "./utils/constants";
 import DoctorConsultations from "./DoctorConsultations";
 import ConsultationSummary from "../Doctor/ConsultationSummary";
 import DoctorAppointmentsHistory from "./DoctorAppointmentsHistory";
+import SectionHeader from "../common/SectionHeader";
+import { User } from "./ProfilePersonalData";
 
 interface ProfileContentProps {
   activeTab: string;
@@ -22,6 +23,13 @@ interface ProfileContentProps {
   setActiveTab: (tab: string) => void;
   appointments: Appointment[];
   emergencyVisits: EmergencyVisit[]
+}
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "¡Buen día";
+  if (hour < 19) return "¡Buenas tardes";
+  return "¡Buenas noches";
 }
 
 const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, emergencyVisits } : ProfileContentProps) => {
@@ -38,15 +46,17 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       {/* 🔹 Sección de INICIO */}
       {activeTab === "home" && (
         <>
-          <div className="bg-white p-6 flex justify-between border-b">
-            <div>
-              <h3 className="text-3xl font-bold text-gray-800">¡Bienvenido, {user?.name}! 👋</h3>
-              <p className="text-gray-600 mt-2">Aquí puedes gestionar turnos, recetas y más.</p>
-            </div>
-            {/* 🔹 Avatar DaisyUI */}
-            <ProfileAvatar profileImage={user?.profileImage?.url} setUser={setUser} />
+          <div className="bg-white flex justify-between">
+            <SectionHeader
+              title={`${getGreeting()}, ${user?.name}! 👋`}
+              description="Aquí puedes gestionar turnos, recetas y más."
+              profileImage={user?.profileImage?.url}
+              setUser={setUser}
+              name={user?.name}
+              lastName={user?.lastName}
+            />
           </div>
-          {appointments.some(a =>
+          {Array.isArray(appointments) && appointments.some(a =>
             isTimeForAppointment(a.date) && a.status !== "CANCELED"
           ) && (
             <div className="bg-green-50 border-l-4 border-green-600 p-4 rounded mb-4 text-green-900">
@@ -67,7 +77,7 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       {activeTab === "personalData-info" && <ProfilePersonalData user={user} />}
 
       {/* 🔹 Otras Secciones */}
-      {activeTab === "prescriptions" && <Prescriptions />}
+      {activeTab === "prescriptions" && <Prescriptions user={user} setUser={setUser} />}
       {activeTab === "tests" && <ControlAnalysis />}
       {activeTab === "aptitude" && <PhysicalFitness />}
       {activeTab === "record-appointments" && (

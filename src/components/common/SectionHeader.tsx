@@ -5,26 +5,35 @@ import ProfileAvatar from '../Profile/ProfileAvatar';
 interface SectionHeaderProps {
   title: string;
   description: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   profileImage?: string;
   setUser?: (user: User) => void;
   children?: React.ReactNode;
+  name?: string;
+  lastName?: string;
 }
 
-const SectionHeader = ({ title, description, icon, profileImage, setUser, children }: SectionHeaderProps) => {
+const SectionHeader = ({ title, description, icon, profileImage, setUser, children, name, lastName }: SectionHeaderProps) => {
   return (
     <div className="bg-white border-b w-full">
-      <div className="p-1 flex justify-between items-start w-full gap-6 items-center">
-        <div className="flex items-center gap-4">
-          <span className="text-2xl">{icon}</span>
+      <div className="flex items-center justify-between w-full gap-8 pb-4">
+        <div className="flex items-center gap-4 flex-1">
+          {icon && <span className="text-3xl">{icon}</span>}
           <div>
             <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
             <p className="text-gray-600 mt-1">{description}</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          {children && <div className="self-center">{children}</div>}
+        {children && (
+          <div className="flex flex-col items-end gap-2 min-w-[120px]">{children}</div>
+        )}
+        <div className="flex flex-col items-center rounded-xl px-6 py-4 min-w-[140px] ml-4">
           {setUser && <ProfileAvatar profileImage={profileImage} setUser={setUser} />}
+          {(name || lastName) && (
+            <span className="mt-3 font-semibold text-sky-800 text-base text-center">
+              {[name, lastName].filter(Boolean).join(" ")}
+            </span>
+          )}
         </div>
       </div>
     </div>

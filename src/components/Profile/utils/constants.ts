@@ -24,6 +24,9 @@ export type Appointment = {
       user?: {
         name?: string;
         lastName?: string;
+        gender?: string;
+        dni?: string;
+        birthDate?: string;
       }
     };
   };

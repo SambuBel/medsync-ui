@@ -4,6 +4,7 @@ import CustomTabs from '../common/CustomTabs';
 import { FaUserMd, FaChevronRight, FaUser, FaStethoscope, FaFileMedical, FaFileAlt, FaVideo } from 'react-icons/fa';
 import JitsiMeet from '../common/JitsiMeet';
 import { User } from './ProfilePersonalData';
+import EmptyState from "../common/EmptyState";
 
 // Mock data types
 type ConsultationType = 'ONLINE' | 'PEDIATRIA' | 'EMERGENCY';
@@ -124,6 +125,7 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
           icon={<FaUserMd className="text-sky-500" />}
           profileImage={user?.profileImage?.url}
           setUser={setUser}
+          name={user?.name}
         />
         <div className="p-6 max-w-7xl mx-auto">
           <div className="mb-4 flex justify-between items-center">
@@ -156,6 +158,8 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
         icon={<FaUserMd className="text-sky-500" />}
         profileImage={user?.profileImage?.url}
         setUser={setUser}
+        name={user?.name}
+        lastName={user?.lastName}
       />
       
       <div className="p-6 max-w-7xl mx-auto">
@@ -167,106 +171,113 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
 
         {/* Lista de consultas */}
         <div className="grid gap-4 mt-6">
-          {filteredConsultations.map((consultation) => (
-            <div
-              key={consultation.id}
-              className={`bg-white rounded-xl border transition-all ${
-                consultation.status === 'waiting' 
-                  ? 'border-yellow-200 hover:border-yellow-300' 
-                  : 'border-gray-200 hover:border-sky-200'
-              }`}
-            >
-              {/* Cabecera principal siempre visible */}
-              <div 
-                className="px-6 py-4 flex justify-between items-center cursor-pointer"
-                onClick={() => toggleExpand(consultation.id)}
-              >
-                <div className="flex items-center gap-6">
-                  <FaChevronRight 
-                    className={`text-gray-400 transform transition-transform duration-300 ${
-                      expandedConsultation === consultation.id ? 'rotate-90' : ''
-                    }`}
-                  />
-                  <div>
-                    <h3 className="font-medium text-lg text-gray-900">{consultation.patientName}</h3>
-                    <p className="text-gray-500">
-                      {consultation.patientAge} años
-                      {consultation.waitingTime && (
-                        <span className="ml-2 text-sky-600">• Esperando: {consultation.waitingTime}</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  {getStatusBadge(consultation.status)}
-                  {consultation.status === 'WAITING' && (
-                    <button
-                      className="p-2 rounded-full bg-green-200 hover:bg-green-100 text-green-600 transition-colors"
-                      onClick={(e) => handleJoinCall(consultation, e)}
-                      title="Atender paciente"
-                    >
-                      <FaVideo className="text-xl" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Contenido expandible */}
+          {filteredConsultations.length === 0 ? (
+            <EmptyState
+              title="No hay consultas por tomar"
+              description="Cuando haya pacientes esperando, aparecerán aquí."
+            />
+          ) : (
+            filteredConsultations.map((consultation) => (
               <div
-                className={`
-                  grid grid-cols-3 gap-6 px-6 pb-6 overflow-hidden transition-all duration-300
-                  ${expandedConsultation === consultation.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
-                `}
+                key={consultation.id}
+                className={`bg-white rounded-xl border transition-all ${
+                  consultation.status === 'waiting' 
+                    ? 'border-yellow-200 hover:border-yellow-300' 
+                    : 'border-gray-200 hover:border-sky-200'
+                }`}
               >
-                {/* Información general */}
-                <div className="space-y-2 border-t pt-4">
-                  <h4 className="text-sky-600 font-medium flex items-center gap-2">
-                    <FaUser className="text-sm" />
-                    Información general
-                  </h4>
-                  <div className="text-sm text-gray-600">
-                    <div>Edad: {consultation.patientAge} años</div>
-                    <div>Estado: {consultation.status}</div>
-                    {consultation.waitingTime && (
-                      <div>Tiempo de espera: {consultation.waitingTime}</div>
+                {/* Cabecera principal siempre visible */}
+                <div 
+                  className="px-6 py-4 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleExpand(consultation.id)}
+                >
+                  <div className="flex items-center gap-6">
+                    <FaChevronRight 
+                      className={`text-gray-400 transform transition-transform duration-300 ${
+                        expandedConsultation === consultation.id ? 'rotate-90' : ''
+                      }`}
+                    />
+                    <div>
+                      <h3 className="font-medium text-lg text-gray-900">{consultation.patientName}</h3>
+                      <p className="text-gray-500">
+                        {consultation.patientAge} años
+                        {consultation.waitingTime && (
+                          <span className="ml-2 text-sky-600">• Esperando: {consultation.waitingTime}</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {getStatusBadge(consultation.status)}
+                    {consultation.status === 'WAITING' && (
+                      <button
+                        className="p-2 rounded-full bg-green-200 hover:bg-green-100 text-green-600 transition-colors"
+                        onClick={(e) => handleJoinCall(consultation, e)}
+                        title="Atender paciente"
+                      >
+                        <FaVideo className="text-xl" />
+                      </button>
                     )}
                   </div>
                 </div>
 
-                {/* Datos de Consulta */}
-                <div className="space-y-2 border-t pt-4">
-                  <h4 className="text-sky-600 font-medium flex items-center gap-2">
-                    <FaStethoscope className="text-sm" />
-                    Datos de Consulta
-                  </h4>
-                  <div className="text-sm">
-                    <div className="text-gray-600">Tipo: {consultation.type}</div>
-                    <div className="mt-2">
-                      {consultation.symptoms?.map((symptom, index) => (
-                        <span
-                          key={index}
-                          className="inline-block px-2 py-1 bg-sky-50 text-sky-700 rounded-full text-xs font-medium mr-2 mb-2"
-                        >
-                          {symptom}
-                        </span>
-                      ))}
+                {/* Contenido expandible */}
+                <div
+                  className={`
+                    grid grid-cols-3 gap-6 px-6 pb-6 overflow-hidden transition-all duration-300
+                    ${expandedConsultation === consultation.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
+                  `}
+                >
+                  {/* Información general */}
+                  <div className="space-y-2 border-t pt-4">
+                    <h4 className="text-sky-600 font-medium flex items-center gap-2">
+                      <FaUser className="text-sm" />
+                      Información general
+                    </h4>
+                    <div className="text-sm text-gray-600">
+                      <div>Edad: {consultation.patientAge} años</div>
+                      <div>Estado: {consultation.status}</div>
+                      {consultation.waitingTime && (
+                        <div>Tiempo de espera: {consultation.waitingTime}</div>
+                      )}
                     </div>
                   </div>
-                </div>
 
-                {/* Historia Clínica */}
-                <div className="space-y-2 border-t pt-4">
-                  <h4 className="text-sky-600 font-medium flex items-center gap-2">
-                    <FaFileMedical className="text-sm" />
-                    Historia Clínica
-                  </h4>
-                  <button className="btn btn-sm bg-sky-100 text-sky-700 hover:bg-sky-200 border-none gap-2">
-                    <FaFileAlt /> Ver Historia
-                  </button>
+                  {/* Datos de Consulta */}
+                  <div className="space-y-2 border-t pt-4">
+                    <h4 className="text-sky-600 font-medium flex items-center gap-2">
+                      <FaStethoscope className="text-sm" />
+                      Datos de Consulta
+                    </h4>
+                    <div className="text-sm">
+                      <div className="text-gray-600">Tipo: {consultation.type}</div>
+                      <div className="mt-2">
+                        {consultation.symptoms?.map((symptom, index) => (
+                          <span
+                            key={index}
+                            className="inline-block px-2 py-1 bg-sky-50 text-sky-700 rounded-full text-xs font-medium mr-2 mb-2"
+                          >
+                            {symptom}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Historia Clínica */}
+                  <div className="space-y-2 border-t pt-4">
+                    <h4 className="text-sky-600 font-medium flex items-center gap-2">
+                      <FaFileMedical className="text-sm" />
+                      Historia Clínica
+                    </h4>
+                    <button className="btn btn-sm bg-sky-100 text-sky-700 hover:bg-sky-200 border-none gap-2">
+                      <FaFileAlt /> Ver Historia
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

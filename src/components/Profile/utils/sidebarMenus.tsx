@@ -51,9 +51,6 @@ import {
       label: "Historial de Turnos",
       icon: <FaHistory />,
     },
-    { id: "prescriptions", label: "Recetas", icon: <FaFileMedical /> },
-    { id: "clinical-notes", label: "Notas Clínicas", icon: <FaStethoscope /> },
-    { id: "tests", label: "Estudios", icon: <FaClipboardList /> },
     {
       id: "personalData",
       label: "Mi perfil",

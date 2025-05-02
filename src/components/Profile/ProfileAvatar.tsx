@@ -23,7 +23,7 @@ const ProfileAvatar = ({ profileImage, setUser, size = 24 }: ProfileAvatarProps)
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file)); // Previsualizar la imagen seleccionada
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -53,7 +53,7 @@ const ProfileAvatar = ({ profileImage, setUser, size = 24 }: ProfileAvatarProps)
       const updatedUserData = await updatedUserRes.json();
       setUser(updatedUserData);
     } catch (error) {
-      setSnackbar({ message: `❌ ${error.message}`, type: "error" });
+      setSnackbar({ message: `❌ ${error instanceof Error ? error.message : "Error desconocido"}`, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ const ProfileAvatar = ({ profileImage, setUser, size = 24 }: ProfileAvatarProps)
     <>
       {/* 🔹 Contenedor del Avatar */}
       <div className="relative group cursor-pointer" onClick={() => setIsModalOpen(true)}>
-        <div className={`w-${size} h-${size} rounded-full border-2 border-gray-300 shadow-lg overflow-hidden transition-all duration-300 transform hover:scale-105`}>
+        <div className={`w-${size} h-${size} rounded-full border-2 border-gray-300 shadow-lg overflow-hidden transition-all duration-300 transform hover:scale-105 shadow-md`}>
           <img
             src={profileImage || "/images/avatar-default.png"}
             alt="Foto de perfil"

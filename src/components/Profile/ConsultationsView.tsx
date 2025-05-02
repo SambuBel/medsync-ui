@@ -51,6 +51,8 @@ export default function ConsultationsView({
         icon={<FaCalendarAlt className="text-sky-500" />}
         profileImage={user?.profileImage?.url}
         setUser={setUser}
+        name={user?.name}
+        lastName={user?.lastName}
       />
 
       {/* Botón agendar consulta */}
