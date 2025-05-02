@@ -35,7 +35,7 @@ export default function ConsultationsView({
 
       if (!res.ok) throw new Error("Error al cancelar el turno");
       location.reload();
-    } catch (err) {
+    } catch {
       alert("❌ Hubo un error al cancelar el turno");
     } finally {
       setIsLoading(false);
@@ -44,23 +44,26 @@ export default function ConsultationsView({
 
   return (
     <div className="bg-white p-6 rounded-lg">
-      <div className="flex justify-between items-center pb-4 mb-6">
-        <SectionHeader
-          title="Mis Consultas"
-          description="Gestiona tus consultas y visitas de emergencia"
-          icon={<FaCalendarAlt className="text-sky-500" />}
-          profileImage={user?.profileImage?.url}
-          setUser={setUser}
+      {/* Header de sección */}
+      <SectionHeader
+        title="Mis Consultas"
+        description="Gestiona tus consultas y visitas de emergencia"
+        icon={<FaCalendarAlt className="text-sky-500" />}
+        profileImage={user?.profileImage?.url}
+        setUser={setUser}
+      />
+
+      {/* Botón agendar consulta */}
+      <div className="flex justify-end mt-4 mb-6">
+        <button
+          className="px-4 py-2 bg-sky-50 text-sky-500 border border-sky-300 rounded-lg font-semibold hover:bg-sky-100 transition"
+          onClick={() => setActiveTab("make-appointment")}
         >
-          <button
-            className="btn btn-primary bg-sky-500 text-white hover:bg-sky-600"
-            onClick={() => setActiveTab("make-appointment")}
-          >
-            <span className="mr-2">➕</span> Agendar consulta
-          </button>
-        </SectionHeader>
+          <span className="mr-2">➕</span> Agendar consulta
+        </button>
       </div>
 
+      {/* Lista de turnos/cards */}
       <MyConsultationsTabs
         appointments={appointments}
         emergencyVisits={emergencyVisits}

@@ -6,6 +6,7 @@ import { formatLocalDateTime } from '@/helpers/formatLocalDateTime';
 import { FaFileMedicalAlt, FaDownload } from 'react-icons/fa';
 import { SpecialtyEnum } from '@/utils/constants/Appointment';
 import { Appointment, EmergencyVisit } from './utils/constants';
+import EmptyState from "../common/EmptyState";
 
 type TabType = 'appointments' | 'emergency';
 
@@ -17,117 +18,95 @@ type Props = {
 
 export default function MyConsultationsTabs({ appointments, emergencyVisits, setSelectedAppointmentId }: Props) {
   const [activeTab, setActiveTab] = useState<TabType>('appointments');
-  console.log("APPOINTMENTS : ", appointments)
+
+  const data = activeTab === 'appointments' ? appointments : emergencyVisits;
+
   return (
-    <div className="mt-10 max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6 border-b border-gray-200">
-      <div role="tablist" className="tabs tabs-boxed mb-6">
-        <a
-          role="tab"
-          className={`tab ${activeTab === 'appointments' ? 'tab-active bg-sky-500 text-white' : ''}`}
+    <div className="mt-10 w-full mx-auto bg-white rounded-lg shadow-lg p-6 border-b border-gray-200">
+      {/* Modern Tabs */}
+      <div className="flex gap-2 mb-8">
+        <button
+          className={`px-5 py-2 rounded-full font-semibold flex items-center gap-2 transition-colors duration-200 ${activeTab === 'appointments' ? 'bg-sky-500 text-white shadow' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'}`}
           onClick={() => setActiveTab('appointments')}
         >
-          <span className='text-white font-medium'>🗓 Turnos Programados</span>
-        </a>
-        <a
-          role="tab"
-          className={`tab ${activeTab === 'emergency' ? 'tab-active bg-sky-500 text-white' : ''}`}
+          🗓 Turnos Programados
+        </button>
+        <button
+          className={`px-5 py-2 rounded-full font-semibold flex items-center gap-2 transition-colors duration-200 ${activeTab === 'emergency' ? 'bg-sky-500 text-white shadow' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'}`}
           onClick={() => setActiveTab('emergency')}
         >
-          <span className='text-white font-medium'>🚨 Visitas de Guardia</span>
-        </a>
+          🚨 Visitas de Guardia
+        </button>
       </div>
 
-      {activeTab === 'appointments' && appointments.length === 0 && (
-        <p className="text-gray-600 text-center">No tenés turnos programados aún.</p>
+      {/* Header de columnas */}
+      <div className="hidden md:flex items-center px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50 rounded-t-xl border-b border-gray-200">
+        <div className="w-1/4">Profesional</div>
+        <div className="w-1/4">Fecha</div>
+        <div className="w-1/6">Estado</div>
+        {activeTab === 'emergency' && <div className="w-1/4">Síntomas</div>}
+        <div className="w-1/6 text-center">Opciones</div>
+      </div>
+
+      {data.length === 0 && (
+        <div className="col-span-full">
+          <EmptyState
+            title={activeTab === 'appointments'
+              ? "No tenés turnos programados aún."
+              : "Aún no has tenido visitas por guardia."
+            }
+            description="¡Cuando tengas consultas aparecerán aquí!"
+          />
+        </div>
       )}
 
-      {activeTab === 'emergency' && emergencyVisits.length === 0 && (
-        <p className="text-gray-600 text-center">Aún no has tenido visitas por guardia.</p>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="table w-full">
-          <thead>
-            <tr className="bg-sky-100 text-sky-800">
-              <th>Profesional</th>
-              <th>Fecha</th>
-              <th>Estado</th>
-              {activeTab === 'emergency' && <th>Síntomas</th>}
-              <th className="text-center">Opciones</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700">
-            {(activeTab === 'appointments' ? appointments : emergencyVisits).map((item: Appointment | EmergencyVisit) => (
-              <tr
-                key={item.id}
-                className="transition-colors hover:bg-sky-50 border-b border-gray-100 last:border-b-0"
+      <div className="divide-y divide-gray-200">
+        {data.map((item: Appointment | EmergencyVisit) => (
+          <div
+            key={item.id}
+            className="hidden md:grid grid-cols-4 gap-4 items-center px-4 py-4 bg-white"
+          >
+            {/* Profesional */}
+            <div className="flex items-center gap-4">
+              <img
+                src={item.doctor?.user?.profileImage?.url || "/images/avatar-default.png"}
+                alt="Avatar"
+                className="w-12 h-12 rounded-full border border-gray-200 object-cover flex-shrink-0"
+              />
+              <div className="flex flex-col min-w-0">
+                <span className="font-semibold text-gray-900 truncate">
+                  {item.doctor?.user?.name} {item.doctor?.user?.lastName}
+                </span>
+                <span className="text-xs text-gray-500 truncate">
+                  {isAppointment(item) ? SpecialtyEnum[item.specialty] ?? '-' : '-'}
+                </span>
+              </div>
+            </div>
+            {/* Fecha */}
+            <div className="text-base text-gray-700 whitespace-nowrap">
+              {isAppointment(item) ? formatLocalDateTime(item.date) : formatLocalDateTime(item.createdAt)}
+            </div>
+            {/* Estado */}
+            <div>
+              <AppointmentStatusPill status={item.status} />
+            </div>
+            {/* Opciones */}
+            <div className="flex gap-2 justify-end">
+              <button className="btn btn-sm bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-200 gap-1">
+                <FaFileMedicalAlt />
+              </button>
+              <button className="btn btn-sm bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200 gap-1">
+                <FaDownload />
+              </button>
+              <button
+                className="btn btn-sm bg-red-100 text-red-700 border-red-200 hover:bg-red-200 gap-1"
+                onClick={() => setSelectedAppointmentId(item.id)}
               >
-                <td>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={item.doctor?.user?.profileImage?.url || "/images/avatar-default.png"}
-                      alt="Avatar"
-                      className="w-10 h-10 rounded-full border border-gray-200 object-cover"
-                    />
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-gray-900 leading-tight">
-                        {item.doctor?.user?.name} {item.doctor?.user?.lastName}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {isAppointment(item) ? SpecialtyEnum[item.specialty] ?? '-' : '-'}
-                      </span>
-                    </div>
-                  </div>
-                </td>
-                <td className="align-middle">
-                  <span className="text-base text-gray-700">
-                    {isAppointment(item) ? formatLocalDateTime(item.date) : formatLocalDateTime(item.createdAt)}
-                  </span>
-                </td>
-                <td className="align-middle">
-                  <AppointmentStatusPill status={item.status} />
-                </td>
-                {activeTab === 'emergency' && (
-                  <td>
-                    <div className="flex flex-wrap gap-1 max-w-xs">
-                      {isEmergencyVisit(item) && item.symptoms?.slice(0, 3).map((symptom: string, i: number) => (
-                        <span key={i} className="badge badge-outline badge-sm text-gray-700 border-sky-400">
-                          {symptom}
-                        </span>
-                      ))}
-                      {isEmergencyVisit(item) && item.symptoms?.length > 3 && (
-                        <div className="tooltip tooltip-top" data-tip={item.symptoms.slice(3).join(', ')}>
-                          <span className="badge badge-sm bg-sky-100 text-sky-700">
-                            +{item.symptoms.length - 3}
-                          </span>
-                        </div>
-                      )}
-                      {isEmergencyVisit(item) && item.otherSymptoms && (
-                        <span className="badge badge-ghost badge-sm text-gray-600 italic">
-                          + {item.otherSymptoms}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                )}
-                <td className="flex gap-2 justify-center align-middle">
-                  <button className="btn btn-sm bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-200 gap-1">
-                    <FaFileMedicalAlt />
-                  </button>
-                  <button className="btn btn-sm bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200 gap-1">
-                    <FaDownload />
-                  </button>
-                  <button
-                    className="btn btn-sm bg-red-100 text-red-700 border-red-200 hover:bg-red-200 gap-1"
-                    onClick={() => setSelectedAppointmentId(item.id)}
-                  >
-                    ❌ Cancelar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                ❌ Cancelar
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

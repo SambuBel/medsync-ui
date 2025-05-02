@@ -14,7 +14,7 @@ interface SectionHeaderProps {
 const SectionHeader = ({ title, description, icon, profileImage, setUser, children }: SectionHeaderProps) => {
   return (
     <div className="bg-white border-b w-full">
-      <div className="p-6 flex justify-between items-start w-full gap-6">
+      <div className="p-1 flex justify-between items-start w-full gap-6 items-center">
         <div className="flex items-center gap-4">
           <span className="text-2xl">{icon}</span>
           <div>

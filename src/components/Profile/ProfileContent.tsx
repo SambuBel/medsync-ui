@@ -33,7 +33,7 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
   }, [activeTab]);
 
   return (
-    <div className="flex-1 p-6 w-full bg-white">
+    <div className="flex-1 p-6 w-full bg-white overflow-y-auto">
       {/* 🔹 Sección de INICIO */}
       {activeTab === "home" && (
         <>
@@ -69,7 +69,7 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       {activeTab === "prescriptions" && <Prescriptions />}
       {activeTab === "tests" && <ControlAnalysis />}
       {activeTab === "aptitude" && <PhysicalFitness />}
-      {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} emergencyVisits={emergencyVisits} appointments={appointments} />}
+      {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} emergencyVisits={emergencyVisits} appointments={appointments} user={user} setUser={setUser} />}
       {activeTab === "make-appointment" && <MakeAppointment /> }
       {activeTab === "emergency" && (
         <GuardiaFormPage user={user} />

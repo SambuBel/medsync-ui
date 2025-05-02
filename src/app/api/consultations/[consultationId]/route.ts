@@ -18,9 +18,10 @@ export async function POST(
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const { consultationId } = await params;
 
     const backendRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/consultations/${params.consultationId}/notes`,
+      `${process.env.NEXT_PUBLIC_API_URL}/consultations/${consultationId}/notes`,
       {
         method: "POST",
         headers: {

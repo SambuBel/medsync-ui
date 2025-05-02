@@ -11,7 +11,7 @@ interface ProfileAvatarProps {
   size?: number;
 }
 
-const ProfileAvatar = ({ profileImage, setUser, size = 32 }: ProfileAvatarProps) => {
+const ProfileAvatar = ({ profileImage, setUser, size = 24 }: ProfileAvatarProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
