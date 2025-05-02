@@ -1,0 +1,37 @@
+// src/app/api/guardia/complete/route.ts
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const cookie = req.headers.get("cookie") || "";
+
+    const tokenRes = await fetch("http://localhost:3000/api/auth/token", {
+      credentials: "include",
+      headers: { cookie },
+    });
+
+    const { token } = await tokenRes.json();
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const backendRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/emergency-visits/${body.emergencyVisitId}/complete`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await backendRes.json();
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error("[Emergency Visit Complete] Error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}

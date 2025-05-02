@@ -1,11 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SectionHeader from '../common/SectionHeader';
 import CustomTabs from '../common/CustomTabs';
 import { FaUserMd, FaChevronRight, FaUser, FaStethoscope, FaFileMedical, FaFileAlt, FaVideo } from 'react-icons/fa';
+import JitsiMeet from '../common/JitsiMeet';
+import { User } from './ProfilePersonalData';
 
 // Mock data types
 type ConsultationType = 'ONLINE' | 'PEDIATRIA' | 'EMERGENCY';
 type ConsultationStatus = 'waiting' | 'in_progress' | 'completed';
+
+interface Consultation {
+  id: string;
+  roomName: string;
+  patientName: string;
+  patientAge: number;
+  symptoms: string[];
+  otherSymptoms?: string;
+  waitingTime: string;
+  status: 'WAITING' | 'IN_PROGRESS' | 'COMPLETED';
+}
 
 interface ActiveConsultation {
   id: string;
@@ -15,37 +28,8 @@ interface ActiveConsultation {
   status: ConsultationStatus;
   waitingTime?: string;
   symptoms?: string[];
+  roomName?: string;
 }
-
-// Mock data
-const mockConsultations: ActiveConsultation[] = [
-  {
-    id: '1',
-    patientName: 'Carlos Armando Bonahora',
-    patientAge: 58,
-    type: 'ONLINE',
-    status: 'waiting',
-    waitingTime: '5 min',
-    symptoms: ['Dolor de cabeza', 'Fiebre']
-  },
-  {
-    id: '2',
-    patientName: 'María González',
-    patientAge: 12,
-    type: 'PEDIATRIA',
-    status: 'in_progress',
-    symptoms: ['Tos', 'Congestión']
-  },
-  {
-    id: '3',
-    patientName: 'Juan Pérez',
-    patientAge: 35,
-    type: 'EMERGENCY',
-    status: 'waiting',
-    waitingTime: '2 min',
-    symptoms: ['Dolor abdominal', 'Náuseas']
-  }
-];
 
 
 // Mover la función fuera de los componentes, al inicio del archivo después de los tipos
@@ -67,26 +51,125 @@ const getStatusBadge = (status: ConsultationStatus) => {
   );
 };
 
-export default function DoctorConsultations() {
+export default function DoctorConsultations({ user, setUser }: { user: User, setUser: (user: User) => void }) {
   const [activeFilter, setActiveFilter] = useState<ConsultationType | 'ALL'>('ALL');
-  const [selectedConsultation, setSelectedConsultation] = useState<string | null>(null);
+  const [activeCall, setActiveCall] = useState<ActiveConsultation | null>(null);
+  const [consultations, setConsultations] = useState<ActiveConsultation[]>([]);
+  const [expandedConsultation, setExpandedConsultation] = useState<string | null>(null);
+
+  const handleJoinCall = async (consultation: Consultation, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    try {
+      // Usar la ruta correcta que configuramos
+      const res = await fetch(`/api/guardia/join/${consultation.roomName}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) throw new Error('Error al unirse a la consulta');
+
+      const data = await res.json();
+      setActiveCall({
+        ...consultation,
+        roomName: data.roomName,
+        status: 'IN_PROGRESS'
+      });
+      
+    } catch (error) {
+      console.error('Error:', error);
+      alert('No se pudo iniciar la videollamada');
+    }
+  };
+
+  const fetchWaitingConsultations = async () => {
+    try {
+      const res = await fetch('/api/jitsi/consultation');
+      if (!res.ok) throw new Error('Error fetching consultations');
+      const data = await res.json();
+      setConsultations(data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWaitingConsultations();
+    // Puedes agregar un intervalo para actualizar periódicamente
+    const interval = setInterval(fetchWaitingConsultations, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const tabs = [
-    { id: 'ALL', label: 'Todas las consultas', count: mockConsultations.length },
-    { id: 'PEDIATRIA', label: 'Pediatría', count: mockConsultations.filter(c => c.type === 'PEDIATRIA').length },
-    { id: 'ONLINE', label: 'Guardia Online', count: mockConsultations.filter(c => c.type === 'ONLINE').length },
+    { id: 'ALL', label: 'Todas las consultas', count: consultations.length },
+    { id: 'PEDIATRIA', label: 'Pediatría', count: consultations.filter(c => c.type === 'PEDIATRIA').length },
+    { id: 'ONLINE', label: 'Guardia Online', count: consultations.filter(c => c.type === 'ONLINE').length },
   ];
 
   const filteredConsultations = activeFilter === 'ALL' 
-    ? mockConsultations 
-    : mockConsultations.filter(c => c.type === activeFilter);
+    ? consultations 
+    : consultations.filter(c => c.type === activeFilter);
 
+  const handleJoinConsultation = async (roomName: string) => {
+    try {
+      const res = await fetch(`/api/guardia/join/${roomName}`, {
+        method: 'POST',
+      });
+      if (!res.ok) throw new Error('Error al unirse a la consulta');
+      const data = await res.json();
+      // Aquí podrías redirigir a la sala de videollamada o manejar la respuesta
+      window.location.href = `/guardia/${data.roomName}`;
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const toggleExpand = (id: string) => {
+    setExpandedConsultation(expandedConsultation === id ? null : id);
+  };
+
+  // Si hay una llamada activa, mostrar la interfaz de Jitsi
+  if (activeCall) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <SectionHeader
+          title={`Consulta con ${activeCall.patientName}`}
+          description="Consulta en curso"
+          icon={<FaUserMd className="text-sky-500" />}
+          profileImage={user?.profileImage?.url}
+          setUser={setUser}
+        />
+        <div className="p-6 max-w-7xl mx-auto">
+          <div className="mb-4 flex justify-between items-center">
+            <button
+              onClick={() => setActiveCall(null)}
+              className="btn btn-ghost gap-2"
+            >
+              ← Volver a la lista
+            </button>
+          </div>
+          <JitsiMeet
+            roomName={activeCall.roomName || ''}
+            server="https://localhost:8443"
+            displayName={`Dr. ${user?.name} ${user?.lastName}`}
+            email={user?.email}
+            role="moderator"
+            status="IN_PROGRESS"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Vista de lista de consultas (código existente)
   return (
     <div className="min-h-screen bg-gray-50">
       <SectionHeader
         title="Guardia Online"
         description="Gestiona las consultas de guardia en tiempo real y atiende a los pacientes que necesitan asistencia."
         icon={<FaUserMd className="text-sky-500" />}
+        profileImage={user?.profileImage?.url}
+        setUser={setUser}
       />
       
       <div className="p-6 max-w-7xl mx-auto">
@@ -101,19 +184,21 @@ export default function DoctorConsultations() {
           {filteredConsultations.map((consultation) => (
             <div
               key={consultation.id}
-              className="bg-white rounded-xl border border-gray-200 hover:border-sky-200 transition-all"
+              className={`bg-white rounded-xl border transition-all ${
+                consultation.status === 'waiting' 
+                  ? 'border-yellow-200 hover:border-yellow-300' 
+                  : 'border-gray-200 hover:border-sky-200'
+              }`}
             >
               {/* Cabecera principal siempre visible */}
               <div 
                 className="px-6 py-4 flex justify-between items-center cursor-pointer"
-                onClick={() => setSelectedConsultation(
-                  selectedConsultation === consultation.id ? null : consultation.id
-                )}
+                onClick={() => toggleExpand(consultation.id)}
               >
                 <div className="flex items-center gap-6">
                   <FaChevronRight 
                     className={`text-gray-400 transform transition-transform duration-300 ${
-                      selectedConsultation === consultation.id ? 'rotate-90' : ''
+                      expandedConsultation === consultation.id ? 'rotate-90' : ''
                     }`}
                   />
                   <div>
@@ -128,16 +213,15 @@ export default function DoctorConsultations() {
                 </div>
                 <div className="flex items-center gap-4">
                   {getStatusBadge(consultation.status)}
-                  <button
-                    className="p-2 rounded-full bg-green-200 hover:bg-green-100 text-green-600 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Lógica para atender
-                    }}
-                    title="Iniciar videollamada"
-                  >
-                    <FaVideo className="text-xl" />
-                  </button>
+                  {consultation.status === 'WAITING' && (
+                    <button
+                      className="p-2 rounded-full bg-green-200 hover:bg-green-100 text-green-600 transition-colors"
+                      onClick={(e) => handleJoinCall(consultation, e)}
+                      title="Atender paciente"
+                    >
+                      <FaVideo className="text-xl" />
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -145,7 +229,7 @@ export default function DoctorConsultations() {
               <div
                 className={`
                   grid grid-cols-3 gap-6 px-6 pb-6 overflow-hidden transition-all duration-300
-                  ${selectedConsultation === consultation.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
+                  ${expandedConsultation === consultation.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
                 `}
               >
                 {/* Información general */}

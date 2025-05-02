@@ -1,6 +1,20 @@
 'use client';
 import { useState } from 'react';
-import JitsiMeet from '@/components/common/JitsiMeet';
+import WaitingRoom from './WaitingRoom';
+import { User } from '../Profile/ProfilePersonalData';
+
+interface RoomData {
+  roomName: string;
+  server: string;
+  displayName: string;
+  email: string;
+  role: 'patient' | 'moderator';
+  status: 'WAITING' | 'IN_PROGRESS' | 'COMPLETED';
+}
+
+interface GuardiaFormPageProps {
+  user: User;
+}
 
 const symptomsList = [
   'Fiebre',
@@ -12,11 +26,11 @@ const symptomsList = [
   'Sangrado',
 ];
 
-export default function GuardiaRoomPage() {
+export default function GuardiaFormPage({ user }: GuardiaFormPageProps) {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [loading, setLoading] = useState(false);
-  const [roomData, setRoomData] = useState<any>(null);
+  const [roomData, setRoomData] = useState<RoomData | null>(null);
 
   const handleToggleSymptom = (symptom: string) => {
     setSelectedSymptoms((prev) =>
@@ -27,6 +41,11 @@ export default function GuardiaRoomPage() {
   };
 
   const handleSubmit = async () => {
+    if (!user.id) {
+      alert('Error: No se pudo identificar al usuario. Por favor, recarga la página.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('/api/guardia/start', {
@@ -35,6 +54,12 @@ export default function GuardiaRoomPage() {
         body: JSON.stringify({
           symptoms: selectedSymptoms,
           additionalInfo,
+          user: {
+            id: user.id,
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email
+          }
         }),
       });
 
@@ -50,15 +75,13 @@ export default function GuardiaRoomPage() {
     }
   };
 
-  if (roomData) {
+  if (roomData && user.id) {
     return (
       <div className="p-4">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Guardia Virtual</h2>
-        <JitsiMeet
+        <WaitingRoom
           roomName={roomData.roomName}
-          server="https://localhost:8443"
-          displayName={roomData.displayName}
-          email={roomData.email}
+          user={{ ...user, id: user.id }}
         />
       </div>
     );
