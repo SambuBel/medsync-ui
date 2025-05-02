@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from 'next/navigation';
 import WaitingRoom from "../Guardia/WaitingRoom";
 import io from "socket.io-client";
 
@@ -19,9 +20,11 @@ declare global {
 }
 
 const JitsiMeet = ({ roomName, server, displayName, email, role, status }: JitsiMeetProps) => {
+  const router = useRouter();
   const jitsiContainerRef = useRef<HTMLDivElement>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
+  const apiRef = useRef<any>(null);
 
   useEffect(() => {
     if (window.JitsiMeetExternalAPI) {
@@ -40,45 +43,18 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
   }, [server]);
 
   useEffect(() => {
+    if (!isScriptLoaded || !window.JitsiMeetExternalAPI || !jitsiContainerRef.current || hasEnded) return;
+
     const socket = io(process.env.NEXT_PUBLIC_API_URL as string, {
       withCredentials: true,
       transports: ['websocket']
     });
-  
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket');
-      socket.emit('joinWaitingRoom', { 
-        roomName, 
-        userId: email 
-      });
-    });
-  
-    socket.on('consultationEnded', (data) => {
-      console.log('Consultation ended:', data);
-      if (data.roomName === roomName) {
-        const redirectPath = role === 'patient' 
-          ? '/profile?tab=record-appointments'
-          : `/profile?tab=consultation-summary&visitId=${data.emergencyVisitId}`;
-        window.location.replace(redirectPath);
-      }
-    });
-  
-    return () => { 
-      socket.disconnect(); 
-    };
-  }, [roomName, role, email]);
-
-  useEffect(() => {
-    if (!isScriptLoaded || !window.JitsiMeetExternalAPI || !jitsiContainerRef.current || hasEnded) return;
 
     const domain = "localhost:8443";
     const api = new window.JitsiMeetExternalAPI(domain, {
       roomName,
       parentNode: jitsiContainerRef.current,
-      userInfo: {
-        displayName,
-        email,
-      },
+      userInfo: { displayName, email },
       configOverwrite: {
         disableProfile: true,
         startWithAudioMuted: false,
@@ -96,91 +72,102 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
         SHOW_POWERED_BY: false,
       },
     });
+    
+    apiRef.current = api;
 
-    // Conectar WebSocket
-    const socket = io(process.env.NEXT_PUBLIC_API_URL as string, {
-      withCredentials: true,
-      transports: ['websocket']
-    });
-
-    socket.on('consultationEnded', (data) => {
+    const handleConsultationEnd = async (data: any) => {
       console.log('Received consultationEnded event:', data);
       if (data.roomName === roomName) {
-        // Forzar cierre de la llamada
-        api.executeCommand('hangup');
-        api.dispose();
+        setHasEnded(true);
         
-        // Redirigir según el rol
-        const redirectPath = role === 'patient' 
-          ? '/profile?tab=record-appointments'
-          : `/profile?tab=consultation-summary&visitId=${data.emergencyVisitId}`;
-        window.location.replace(redirectPath);
+        // Primero cerramos la llamada
+        if (apiRef.current) {
+          apiRef.current.executeCommand('hangup');
+          apiRef.current.dispose();
+        }
+
+        // Esperamos un momento y redirigimos
+        setTimeout(() => {
+          if (role === 'patient') {
+            router.push('/profile?tab=record-appointments');
+          } else {
+            router.push(`/profile?tab=consultation-summary&visitId=${data.emergencyVisitId}`);
+          }
+        }, 1000);
       }
-    });
+    };
 
     const handleEndMeeting = async () => {
       if (hasEnded) return;
-      setHasEnded(true);
       
       try {
-        // Si es el doctor, notificar al backend
         if (role === 'moderator') {
-          await fetch('/api/jitsi/consultation/end', {
+          console.log('Doctor ending meeting...');
+          const response = await fetch('/api/guardia/end', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
             body: JSON.stringify({ 
-              roomName,
-              userId: email
+              roomName, 
+              userId: email 
             }),
           });
+          
+          if (!response.ok) {
+            throw new Error('Failed to end consultation');
+          }
+
           // El doctor ejecuta el comando de finalizar conferencia
           api.executeCommand('endConference');
+          setHasEnded(true);
         }
-        // La redirección ocurrirá cuando se reciba el evento consultationEnded
       } catch (error) {
-        console.error('Error al finalizar la llamada:', error);
+        console.error('Error ending meeting:', error);
         setHasEnded(false);
       }
     };
 
-    // Eventos específicos para el paciente
-    if (role === 'patient') {
-      api.addEventListeners({
-        participantLeft: (participant: any) => {
-          if (participant.role === 'moderator') {
-            console.log('El doctor abandonó la llamada');
-            // No hacer nada aquí, esperar el evento consultationEnded
-          }
-        },
-        videoConferenceLeft: () => {
-          // Solo manejar si no ha terminado ya
-          if (!hasEnded) {
-            handleEndMeeting();
-          }
+    // Eventos de Jitsi
+    api.addEventListeners({
+      readyToClose: handleEndMeeting,
+      videoConferenceLeft: () => {
+        if (role === 'moderator') {
+          handleEndMeeting();
         }
-      });
-    } else {
-      // Eventos para el doctor
-      api.addEventListeners({
-        videoConferenceLeft: handleEndMeeting,
-        readyToClose: handleEndMeeting
-      });
-    }
+      },
+      participantLeft: (participant: any) => {
+        if (role === 'patient' && participant.role === 'moderator') {
+          console.log('Doctor left the call');
+          // El paciente espera el evento consultationEnded
+        }
+      }
+    });
 
-    // Manejar el botón de colgar
+    // Botón de colgar
     api.on('toolbarButtonClicked', (buttonName: string) => {
       if (buttonName === 'hangup') {
         handleEndMeeting();
       }
     });
 
+    // Conexión WebSocket
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket');
+      socket.emit('joinWaitingRoom', { roomName, userId: email });
+    });
+
+    socket.on('consultationEnded', handleConsultationEnd);
+
     return () => {
+      socket.off('consultationEnded', handleConsultationEnd);
       socket.disconnect();
-      if (!hasEnded) {
-        api.dispose();
+      if (apiRef.current && !hasEnded) {
+        apiRef.current.dispose();
       }
     };
-  }, [isScriptLoaded, roomName, server, displayName, email, role, hasEnded]);
+  }, [isScriptLoaded, roomName, server, displayName, email, role, hasEnded, router]);
 
   if (role === 'patient' && status === 'WAITING') {
     return <WaitingRoom roomName={roomName} user={{
