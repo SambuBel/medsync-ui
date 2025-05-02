@@ -86,14 +86,13 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
           apiRef.current.dispose();
         }
 
-        // Esperamos un momento y redirigimos
-        setTimeout(() => {
-          if (role === 'patient') {
-            router.push('/profile?tab=record-appointments');
-          } else {
-            router.push(`/profile?tab=consultation-summary&visitId=${data.emergencyVisitId}`);
-          }
-        }, 1000);
+        // Redirigir según el rol
+        if (role === 'patient') {
+          router.push('/profile?tab=record-appointments');
+        } else {
+          // Para el doctor, usar el ID de la visita y nombre del paciente
+          router.push(`/profile?tab=consultation-summary&visitId=${data.emergencyVisitId}&patientName=${encodeURIComponent(data.patientName)}`);
+        }
       }
     };
 
@@ -119,9 +118,18 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
             throw new Error('Failed to end consultation');
           }
 
+          const data = await response.json();
+          
           // El doctor ejecuta el comando de finalizar conferencia
           api.executeCommand('endConference');
           setHasEnded(true);
+
+          // Emitir evento de finalización
+          socket.emit('consultationEnded', {
+            roomName,
+            emergencyVisitId: data.emergencyVisitId,
+            patientName: data.patientName
+          });
         }
       } catch (error) {
         console.error('Error ending meeting:', error);

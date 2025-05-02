@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ProfileAppointments from "./ConsultationsView";
 import ControlAnalysis from "./ControlAnalysis";
 import NewsCarousel from "./NewsCarousel";
@@ -23,6 +24,9 @@ interface ProfileContentProps {
 }
 
 const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, emergencyVisits } : ProfileContentProps) => {
+  const searchParams = useSearchParams();
+  const visitId = searchParams.get('visitId');
+  const patientName = searchParams.get('patientName');
 
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
@@ -73,8 +77,8 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       {activeTab === "active-consultations" && (
         <DoctorConsultations user={user} setUser={setUser} />
       )}
-      {activeTab === "consultation-summary" && (
-        <ConsultationSummary />
+      {activeTab === "consultation-summary" && visitId && (
+        <ConsultationSummary visitId={visitId} patientName={patientName} />
       )}
 
     </div>

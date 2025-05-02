@@ -39,7 +39,12 @@ export async function POST(req: NextRequest) {
       throw new Error('Datos de visita incompletos');
     }
 
-    return NextResponse.json(data);
+    // Devolver solo los datos necesarios sin redirecciones
+    return NextResponse.json({
+      emergencyVisitId: data.emergencyVisitId,
+      patientName: data.patientName,
+      roomName: data.roomName
+    });
   } catch (err) {
     console.error("[Guardia End] Error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

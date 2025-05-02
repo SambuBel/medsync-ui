@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProfileSidebar from "@/components/Profile/ProfileSidebar";
 import ProfileContent from "@/components/Profile/ProfileContent";
 import LoadingComponent from "@/components/Profile/LoadingComponent";
@@ -8,11 +8,12 @@ import { User } from "@/components/Profile/ProfilePersonalData";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("activeTab") || "home";
+      return searchParams.get("tab") || localStorage.getItem("activeTab") || "home";
     }
     return "home";
   });
@@ -20,6 +21,13 @@ export default function ProfilePage() {
   const [appointments, setAppointments] = useState([]);
   const [emergencies, setEmergencies] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab");
+    if (tabFromUrl && tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 

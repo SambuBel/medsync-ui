@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { FaFileMedical, FaPrescriptionBottleAlt, FaUserMd } from 'react-icons/fa';
 
 type NoteType = 'GENERAL' | 'DIAGNOSIS' | 'PRESCRIPTION' | 'FOLLOW_UP' | 'DERIVATION';
@@ -10,11 +10,13 @@ interface ClinicalNoteForm {
   content: string;
 }
 
-export default function DoctorConsultationSummary() {
+interface ConsultationSummaryProps {
+  visitId: string;
+  patientName: string | null;
+}
+
+export default function DoctorConsultationSummary({ visitId, patientName }: ConsultationSummaryProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const visitId = searchParams.get('visitId');
-  const patientName = searchParams.get('patientName');
 
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'notes' | 'prescription'>('notes');
@@ -25,6 +27,27 @@ export default function DoctorConsultationSummary() {
   const [prescription, setPrescription] = useState({
     medication: '',
   });
+
+  // Añadir efecto para cargar datos existentes si los hay
+  useEffect(() => {
+    const loadExistingData = async () => {
+      try {
+        const response = await fetch(`/api/consultations/${visitId}/documents`);
+        if (response.ok) {
+          const data = await response.json();
+          // Actualizar el estado con notas/prescripciones existentes
+          if (data.clinicalNotes?.length) {
+            setClinicalNote(data.clinicalNotes[0]);
+          }
+          // ... manejar otros datos
+        }
+      } catch (error) {
+        console.error('Error loading existing data:', error);
+      }
+    };
+
+    loadExistingData();
+  }, [visitId]);
 
   const handleSubmit = async () => {
     if (!visitId) {
