@@ -13,6 +13,7 @@ import GuardiaFormPage from "../Guardia/GuardiaFormPage";
 import { EmergencyVisit, Appointment } from "./utils/constants";
 import DoctorConsultations from "./DoctorConsultations";
 import ConsultationSummary from "../Doctor/ConsultationSummary";
+import DoctorAppointmentsHistory from "./DoctorAppointmentsHistory";
 
 interface ProfileContentProps {
   activeTab: string;
@@ -69,7 +70,16 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       {activeTab === "prescriptions" && <Prescriptions />}
       {activeTab === "tests" && <ControlAnalysis />}
       {activeTab === "aptitude" && <PhysicalFitness />}
-      {activeTab === "record-appointments" &&  <ProfileAppointments setActiveTab={setActiveTab} emergencyVisits={emergencyVisits} appointments={appointments} user={user} setUser={setUser} />}
+      {activeTab === "record-appointments" && (
+        <ProfileAppointments
+          setActiveTab={setActiveTab}
+          emergencyVisits={emergencyVisits}
+          appointments={appointments}
+          user={user}
+          setUser={setUser}
+        />
+      )}
+      {activeTab === "doctor-appointments" && <DoctorAppointmentsHistory user={user} setUser={setUser} />}
       {activeTab === "make-appointment" && <MakeAppointment /> }
       {activeTab === "emergency" && (
         <GuardiaFormPage user={user} />

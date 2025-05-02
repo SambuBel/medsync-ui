@@ -1,3 +1,4 @@
+import { Doctor } from "@/components/Profile/ProfilePersonalData";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -15,8 +16,8 @@ export async function GET(req: Request) {
 
     // 🔹 Fetch disponibilidad semanal para cada doctor
     const enrichedDoctors = await Promise.all(
-      doctors.map(async (doctor: any) => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor.id}/weekly-availability?specialty=${specialty}`);
+      doctors.map(async (doctor: Doctor) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/doctor/${doctor.id}/weekly-availability?specialty=${specialty}`);
         const availableSlots = await response.json();
         return { ...doctor, availableSlots };
       })

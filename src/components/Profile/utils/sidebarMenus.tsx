@@ -7,6 +7,7 @@ import {
     FaUser,
     FaUserMd,
     FaStethoscope,
+    FaHistory,
   } from "react-icons/fa";
   import { ReactNode } from "react";
   
@@ -46,13 +47,9 @@ import {
     { id: "home", label: "Inicio", icon: <FaHome /> },
     { id: "active-consultations", label: "Guardia Online", icon: <FaUserMd /> },
     {
-      id: "appointments",
-      label: "Turnosss",
-      icon: <FaCalendarAlt />,
-      submenu: [
-        { id: "today-appointments", label: "Turnos de hoy" },
-        { id: "all-appointments", label: "Todos los turnos" },
-      ],
+      id: "doctor-appointments",
+      label: "Historial de Turnos",
+      icon: <FaHistory />,
     },
     { id: "prescriptions", label: "Recetas", icon: <FaFileMedical /> },
     { id: "clinical-notes", label: "Notas Clínicas", icon: <FaStethoscope /> },

@@ -20,6 +20,12 @@ export type Appointment = {
       verified: boolean;
       user: User;
     };
+    patient?: {
+      user?: {
+        name?: string;
+        lastName?: string;
+      }
+    };
   };
   
 

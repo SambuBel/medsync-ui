@@ -20,6 +20,7 @@ export async function GET() {
     const data = await res.json();
     return NextResponse.json(data);
   } catch (error) {
+    console.error("Error en el servidor", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   }
 }

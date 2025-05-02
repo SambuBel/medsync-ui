@@ -70,6 +70,7 @@ export default function DoctorConsultationSummary({ visitId, patientName }: Cons
       // Si quieres, puedes actualizar el estado o redirigir
       router.push('/profile?tab=active-consultations');
     } catch (error) {
+      console.error("Error al guardar la nota clínica", error);
       alert('Ocurrió un error al guardar la nota clínica');
     } finally {
       setLoading(false);

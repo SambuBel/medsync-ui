@@ -62,6 +62,13 @@ export default function ProfilePage() {
     router.push("/");
   };
 
+  const setActiveTabAndUrl = (tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", tab);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
   if (loading) return <LoadingComponent />;
   if (!user) return <p className="text-center mt-10">No autorizado</p>;
 
@@ -70,7 +77,7 @@ export default function ProfilePage() {
       <div className="w-64 h-screen overflow-y-auto flex-shrink-0">
         <ProfileSidebar
           activeTab={activeTab}
-          setActiveTab={setActiveTab}
+          setActiveTab={setActiveTabAndUrl}
           handleLogout={handleLogout}
           isCollapsed={isCollapsed}
           toggleSidebar={toggleSidebar}
@@ -83,7 +90,7 @@ export default function ProfilePage() {
           appointments={appointments}
           emergencyVisits={emergencies}
           user={user}  setUser={setUser}
-          setActiveTab={setActiveTab}
+          setActiveTab={setActiveTabAndUrl}
         />
       </main>
     </div>
