@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { Appointment, EmergencyVisit } from "./utils/constants";
-import MyConsultationsTabs from "./MyConsultationsTabs";
+import { Appointment } from "./utils/constants";
 import SectionHeader from "../common/SectionHeader";
 import { FaCalendarAlt } from "react-icons/fa";
 import { User } from "./ProfilePersonalData";
 
 type ProfileViewProps = {
   appointments: Appointment[];
-  emergencyVisits: EmergencyVisit[];
   setActiveTab: (tab: string) => void;
   user: User;
   setUser: (user: User) => void;
@@ -15,7 +13,6 @@ type ProfileViewProps = {
 
 export default function ConsultationsView({
   appointments,
-  emergencyVisits,
   setActiveTab,
   user,
   setUser,
@@ -66,11 +63,69 @@ export default function ConsultationsView({
       </div>
 
       {/* Lista de turnos/cards */}
-      <MyConsultationsTabs
-        appointments={appointments}
-        emergencyVisits={emergencyVisits}
-        setSelectedAppointmentId={setSelectedAppointmentId}
-      />
+      <div className="overflow-x-auto rounded-lg shadow border border-gray-100 bg-white mt-6">
+        <table className="min-w-full">
+          <thead>
+            <tr className="bg-sky-50 text-sky-700">
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Profesional</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Fecha</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Estado</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Opciones</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-700">
+            {appointments.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="py-8 text-center text-gray-400">
+                  No hay turnos programados.
+                </td>
+              </tr>
+            ) : (
+              appointments.map((appt) => (
+                <tr
+                  key={appt.id}
+                  className="transition-colors hover:bg-sky-50 border-b border-gray-100 last:border-b-0"
+                >
+                  <td className="px-6 py-4 font-semibold">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={appt.doctor?.user?.profileImage?.url || "/images/avatar-default.png"}
+                        alt="Avatar"
+                        className="w-10 h-10 rounded-full border border-gray-200 object-cover flex-shrink-0"
+                      />
+                      <span>{appt.doctor?.user?.name} {appt.doctor?.user?.lastName}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {new Date(appt.date).toLocaleString("es-AR", { dateStyle: "full", timeStyle: "short" })}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      appt.status === "CONFIRMED"
+                        ? "bg-green-100 text-green-800"
+                        : appt.status === "PENDING"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : appt.status === "CANCELED"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}>
+                      {appt.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <button
+                      className="px-3 py-1 bg-sky-100 text-sky-700 rounded-lg border border-sky-300 hover:bg-sky-200 transition text-sm font-semibold"
+                      onClick={() => setSelectedAppointmentId(appt.id)}
+                    >
+                      Cancelar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {selectedAppointmentId && (
         <dialog id="cancelModal" className="modal modal-open">

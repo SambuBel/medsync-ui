@@ -74,7 +74,7 @@ export default function ProfilePage() {
 
   return (
     <div className="flex h-screen transition-all duration-300">
-      <div className="w-64 h-screen overflow-y-auto flex-shrink-0">
+      <div className={`transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"} h-screen overflow-y-auto flex-shrink-0`}>
         <ProfileSidebar
           activeTab={activeTab}
           setActiveTab={setActiveTabAndUrl}
@@ -84,14 +84,16 @@ export default function ProfilePage() {
           role={user.role}
         />
       </div>
-      <main className="flex-1 overflow-y-auto bg-gray-50">
-        <ProfileContent
-          activeTab={activeTab}
-          appointments={appointments}
-          emergencyVisits={emergencies}
-          user={user}  setUser={setUser}
-          setActiveTab={setActiveTabAndUrl}
-        />
+      <main className="flex-1 min-h-screen overflow-y-auto bg-gray-50">
+        <div className="overflow-x-auto rounded-lg shadow border border-gray-100 bg-white mt-6 scrollbar-thin scrollbar-thumb-sky-200 scrollbar-track-sky-50">
+          <ProfileContent
+            activeTab={activeTab}
+            appointments={appointments}
+            emergencyVisits={emergencies}
+            user={user}  setUser={setUser}
+            setActiveTab={setActiveTabAndUrl}
+          />
+        </div>
       </main>
     </div>
   );
