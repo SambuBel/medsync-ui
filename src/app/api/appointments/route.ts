@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(await res.json());
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   }
 }
@@ -50,7 +50,7 @@ export async function GET() {
     }
 
     return NextResponse.json(await res.json());
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   }
 }
@@ -78,7 +78,7 @@ export async function PATCH(req: Request) {
     }
 
     return NextResponse.json(await res.json());
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import InputField from "@/components/Register/InputField";
-import { GenderEnum } from "@/utils/constants/Appointment";
+import { GenderEnum, Slot } from "@/utils/constants/Appointment";
 import SnackBar from "../common/SnackBar";
 import CollapsibleCard from "../common/CollapsibleCard";
 import { FiUser, FiBriefcase } from "react-icons/fi";
@@ -14,6 +14,8 @@ export interface Doctor {
     experience?: number;
     description?: string;
     education?: string;
+    user?: User;
+    availableSlots?: Slot[];
   }
 
 export interface User {
@@ -52,7 +54,11 @@ const ProfilePersonalData: React.FC<ProfilePersonalDataProps> = ({ user }) => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [snackBar, setSnackBar] = useState({ show: false, message: "", type: "success" });
+  const [snackBar, setSnackBar] = useState<{ 
+    show: boolean; 
+    message: string; 
+    type: "success" | "error" | "warning" | "info" 
+  }>({ show: false, message: "", type: "success" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -62,7 +68,7 @@ const ProfilePersonalData: React.FC<ProfilePersonalDataProps> = ({ user }) => {
     setDoctorData({ ...doctorData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
   
@@ -79,7 +85,8 @@ const ProfilePersonalData: React.FC<ProfilePersonalDataProps> = ({ user }) => {
       setSnackBar({ show: true, message: "Datos actualizados correctamente.", type: "success" });
 
     } catch (error) {
-        setSnackBar({ show: true, message: `❌ ${error.message}`, type: "error" });
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+        setSnackBar({ show: true, message: `❌ ${errorMessage}`, type: "error" });
     } finally {
       setLoading(false);
     }

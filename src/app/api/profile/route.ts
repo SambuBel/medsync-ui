@@ -46,7 +46,7 @@ export async function PUT(req: Request) {
 
     const updatedUser = await res.json();
     return NextResponse.json(updatedUser);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   }
 }

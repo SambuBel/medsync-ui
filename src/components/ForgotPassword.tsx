@@ -10,7 +10,7 @@ const ForgotPassword = () => {
     try {
       const response = await resetPassword(email);
       setMessage(response);
-    } catch (error: any) {
+    } catch {
       setMessage("⚠️ Error al enviar el correo.");
     }
   };

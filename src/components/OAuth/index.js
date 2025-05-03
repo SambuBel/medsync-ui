@@ -35,7 +35,7 @@ const OAuth = ({ className = "", handleClose, handleOAuth, disable }) => {
   const submitForm = useCallback(
     async (e) => {
       e.preventDefault();
-      fillFieldMessage?.length && setFillFieldMessage("");
+      if (fillFieldMessage?.length) setFillFieldMessage("");
       setLoading(true);
       
       if (email && password) {

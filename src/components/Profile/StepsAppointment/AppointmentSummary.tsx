@@ -39,7 +39,7 @@ const AppointmentSummary = ({ doctor, date, time, onConfirm, onBack }: Appointme
             <p className="text-lg font-semibold">
               {doctor.user.name} {doctor.user.lastName || ""}
             </p>
-            <p className="text-sm text-gray-600">{SpecialtyEnum[doctor.specialty[0]]}</p>
+            <p className="text-sm text-gray-600">{SpecialtyEnum[doctor.specialty[0] as keyof typeof SpecialtyEnum]}</p>
           </div>
         </div>
 

@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { Appointment } from "./utils/constants";
+import { Appointment, EmergencyVisit } from "./utils/constants";
 import SectionHeader from "../common/SectionHeader";
 import { FaCalendarAlt } from "react-icons/fa";
 import { User } from "./ProfilePersonalData";
 
-type ProfileViewProps = {
-  appointments: Appointment[];
+interface ProfileViewProps {
   setActiveTab: (tab: string) => void;
+  emergencyVisits: EmergencyVisit[];
+  appointments: Appointment[];
   user: User;
   setUser: (user: User) => void;
-};
+}
 
 export default function ConsultationsView({
   appointments,

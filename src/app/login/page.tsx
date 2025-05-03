@@ -52,8 +52,8 @@ const LoginPage = () => {
   
       console.log("✅ Login exitoso!");
       router.push("/profile");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ const LoginPage = () => {
       const firebaseUser = await loginWithGoogle();
       console.log("✅ Usuario autenticado con Google:", firebaseUser);
       router.push("/profile");
-    } catch (error) {
+    } catch {
       setError("Error en Google Login");
     }
   };
@@ -82,7 +82,7 @@ const LoginPage = () => {
         console.log("✅ Usuario autenticado con Teléfono");
         router.push("/profile");
       }
-    } catch (error) {
+    } catch {
       setError("Error en Login con Teléfono");
     }
   };

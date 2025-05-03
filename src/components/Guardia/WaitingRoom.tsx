@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import JitsiMeet from '../common/JitsiMeet';
 import { User } from '../Profile/ProfilePersonalData';
+import { MeetingStatus } from '../common/AppointmentStatusPill';
 
 interface WaitingRoomUser extends User {
   id: string;
@@ -35,7 +36,7 @@ export default function WaitingRoom({ roomName, user }: WaitingRoomProps) {
       transports: ['websocket']
     });
 
-    const handleConsultationEnd = (data: any) => {
+    const handleConsultationEnd = (data: { roomName: string; emergencyVisitId: string; patientName: string }) => {
       if (data.roomName === roomName) {
         window.location.replace('/profile?tab=record-appointments');
       }
@@ -85,11 +86,11 @@ export default function WaitingRoom({ roomName, user }: WaitingRoomProps) {
     return `${hours}h ${remainingMinutes}m`;
   };
 
-  if (status === 'IN_PROGRESS') {
+  if (status === MeetingStatus.IN_PROGRESS) {
     return (
       <JitsiMeet
         roomName={roomName}
-        server="https://localhost:8443"
+        server={process.env.NEXT_PUBLIC_JITSI_SERVER as string}
         displayName={`${user.name} ${user.lastName}`}
         email={user.email}
         role={user.role.toLowerCase() as 'patient' | 'moderator'}

@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import StepSelectSpecialty from "./StepSelectSpecialty";
 import StepSelectDoctor from "./StepSelectDoctor";
 import AppointmentSummary from "./AppointmentSummary";
+import { Doctor } from "../ProfilePersonalData";
 
 const AppointmentStepper = () => {
   const [step, setStep] = useState(1);
   const [specialty, setSpecialty] = useState("");
   const [doctors, setDoctors] = useState([]);
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [loading, setLoading] = useState(false);
@@ -124,7 +125,14 @@ const AppointmentStepper = () => {
 
         {step === 3 && selectedDoctor && selectedTime && (
           <AppointmentSummary
-            doctor={selectedDoctor}
+            doctor={{
+              user: {
+                name: selectedDoctor?.user?.name || "",
+                lastName: selectedDoctor?.user?.lastName || "",
+                profileImage: selectedDoctor?.user?.profileImage || undefined,
+              },
+              specialty: selectedDoctor?.specialty || [],
+            }}
             date={selectedDate?.toISOString() || ""}
             time={selectedTime}
             onConfirm={handleSubmit}

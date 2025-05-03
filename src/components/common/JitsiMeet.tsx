@@ -13,9 +13,16 @@ interface JitsiMeetProps {
   status: 'WAITING' | 'IN_PROGRESS' | 'COMPLETED';
 }
 
+interface JitsiMeetExternalAPI {
+  executeCommand: (command: string) => void;
+  dispose: () => void;
+  addEventListeners: (listeners: Record<string, (...args: unknown[]) => void>) => void;
+  on: (event: string, callback: (buttonName: string) => void) => void;
+}
+
 declare global {
   interface Window {
-    JitsiMeetExternalAPI: any;
+    JitsiMeetExternalAPI: unknown;
   }
 }
 
@@ -24,7 +31,7 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
   const jitsiContainerRef = useRef<HTMLDivElement>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
-  const apiRef = useRef<any>(null);
+  const apiRef = useRef<unknown | null>(null);
 
   useEffect(() => {
     if (window.JitsiMeetExternalAPI) {
@@ -34,7 +41,7 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
 
     const script = document.createElement("script");
     //script.src = "https://meet.jit.si/external_api.js";
-    script.src = "https://localhost:8443/libs/external_api.min.js";
+    script.src = process.env.NEXT_PUBLIC_JITSI_SERVER as string + "/libs/external_api.min.js";
     //script.src = "/jitsi/libs/external_api.min.js";
     script.async = true;
     script.onload = () => setIsScriptLoaded(true);
@@ -51,7 +58,8 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
     });
 
     const domain = "localhost:8443";
-    const api = new window.JitsiMeetExternalAPI(domain, {
+    const JitsiAPI = window.JitsiMeetExternalAPI as unknown as new (...args: unknown[]) => JitsiMeetExternalAPI;
+    const api = new JitsiAPI(domain, {
       roomName,
       parentNode: jitsiContainerRef.current,
       userInfo: { displayName, email },
@@ -73,17 +81,18 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
       },
     });
     
-    apiRef.current = api;
+    apiRef.current = api as unknown;
 
-    const handleConsultationEnd = async (data: any) => {
-      console.log('Received consultationEnded event:', data);
-      if (data.roomName === roomName) {
+    const handleConsultationEnd = async (data: unknown) => {
+      const eventData = data as { roomName: string; emergencyVisitId: string; patientName: string };
+      console.log('Received consultationEnded event:', eventData);
+      if (eventData.roomName === roomName) {
         setHasEnded(true);
         
         // Primero cerramos la llamada
         if (apiRef.current) {
-          apiRef.current.executeCommand('hangup');
-          apiRef.current.dispose();
+          (apiRef.current as unknown as JitsiMeetExternalAPI).executeCommand('hangup');
+          (apiRef.current as unknown as JitsiMeetExternalAPI).dispose();
         }
 
         // Redirigir según el rol
@@ -91,7 +100,7 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
           router.push('/profile?tab=record-appointments');
         } else {
           // Para el doctor, usar el ID de la visita y nombre del paciente
-          router.push(`/profile?tab=consultation-summary&visitId=${data.emergencyVisitId}&patientName=${encodeURIComponent(data.patientName)}`);
+          router.push(`/profile?tab=consultation-summary&visitId=${eventData.emergencyVisitId}&patientName=${encodeURIComponent(eventData.patientName)}`);
         }
       }
     };
@@ -121,7 +130,7 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
           const data = await response.json();
           
           // El doctor ejecuta el comando de finalizar conferencia
-          api.executeCommand('endConference');
+          (apiRef.current as unknown as JitsiMeetExternalAPI).executeCommand('endConference');
           setHasEnded(true);
 
           // Emitir evento de finalización
@@ -138,15 +147,15 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
     };
 
     // Eventos de Jitsi
-    api.addEventListeners({
+    (apiRef.current as unknown as JitsiMeetExternalAPI).addEventListeners({
       readyToClose: handleEndMeeting,
       videoConferenceLeft: () => {
         if (role === 'moderator') {
           handleEndMeeting();
         }
       },
-      participantLeft: (participant: any) => {
-        if (role === 'patient' && participant.role === 'moderator') {
+      participantLeft: (participant: unknown) => {
+        if (role === 'patient' && (participant as { role: string }).role === 'moderator') {
           console.log('Doctor left the call');
           // El paciente espera el evento consultationEnded
         }
@@ -154,7 +163,7 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
     });
 
     // Botón de colgar
-    api.on('toolbarButtonClicked', (buttonName: string) => {
+    (apiRef.current as unknown as JitsiMeetExternalAPI).on('toolbarButtonClicked', (buttonName: string) => {
       if (buttonName === 'hangup') {
         handleEndMeeting();
       }
@@ -172,7 +181,7 @@ const JitsiMeet = ({ roomName, server, displayName, email, role, status }: Jitsi
       socket.off('consultationEnded', handleConsultationEnd);
       socket.disconnect();
       if (apiRef.current && !hasEnded) {
-        apiRef.current.dispose();
+        (apiRef.current as unknown as JitsiMeetExternalAPI).dispose();
       }
     };
   }, [isScriptLoaded, roomName, server, displayName, email, role, hasEnded, router]);

@@ -13,6 +13,15 @@ type StatusType =
   | "COMPLETED"
   | "CANCELED";
 
+export enum MeetingStatus {
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  CANCELED = "CANCELED",
+  COMPLETED = "COMPLETED",
+  WAITING = "WAITING",
+  IN_PROGRESS = "IN_PROGRESS",
+}
+
 type Props = {
   status: StatusType;
 };

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Obtener el token primero
@@ -17,10 +17,10 @@ export async function POST(
     }
 
     const { token } = await tokenRes.json();
-    const roomId = params.id; // Guardar el ID en una variable
+    const { id } = await context.params;
 
     // Hacer la llamada al backend
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/jitsi/join/${roomId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/jitsi/join/${id}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

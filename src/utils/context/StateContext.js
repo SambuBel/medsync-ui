@@ -1,17 +1,16 @@
-"use client"; // 👈 Necesario para usar hooks en Next.js
+"use client";
 
 import {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
 } from "react";
 import { toast } from "react-hot-toast";
 
-const Context = createContext(); // Crear el contexto
+const Context = createContext();
 
-export const StateContextProvider = ({ children }) => { // 👈 Cambié el nombre a `StateContextProvider`
+export const StateContextProvider = ({ children }) => {
   const [navigation, setNavigation] = useState([]);
   const [cosmicUser, setCosmicUser] = useState({});
   const [cartItems, setCartItems] = useState([]);

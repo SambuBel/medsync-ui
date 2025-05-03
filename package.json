@@ -16,6 +16,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "firebase": "^11.4.0",
+    "firebase-admin": "^13.3.0",
     "framer-motion": "^12.4.7",
     "lib-jitsi-meet": "^1.0.6",
     "luxon": "^3.6.0",

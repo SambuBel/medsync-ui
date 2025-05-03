@@ -1,24 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { consultationId: string } }
+  context: { params: Promise<{ consultationId: string }> }
 ) {
+  const { consultationId } = await context.params;
   try {
-    const body = await req.json();
-    const cookie = req.headers.get("cookie") || "";
+    const body = await req.json()
+    const cookie = req.headers.get("cookie") || ""
 
-    const tokenRes = await fetch("http://localhost:3000/api/auth/token", {
+    const tokenRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, {
       credentials: "include",
       headers: { cookie },
-    });
+    })
 
-    const { token } = await tokenRes.json();
+    const { token } = await tokenRes.json()
 
     if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-    const { consultationId } = await params;
 
     const backendRes = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/consultations/${consultationId}/notes`,
@@ -30,12 +30,12 @@ export async function POST(
         },
         body: JSON.stringify(body),
       }
-    );
+    )
 
-    const data = await backendRes.json();
-    return NextResponse.json(data);
+    const data = await backendRes.json()
+    return NextResponse.json(data)
   } catch (err) {
-    console.error("[Clinical Notes] Error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("[Clinical Notes] Error:", err)
+    return NextResponse.json({ error: "Server error" }, { status: 500 })
   }
 }

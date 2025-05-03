@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/jitsi/:path*',
-        destination: 'https://localhost:8443/:path*',
+        destination: process.env.NEXT_PUBLIC_JITSI_SERVER as string + '/:path*',
       },
     ];
   },

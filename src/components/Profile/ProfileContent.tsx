@@ -1,3 +1,4 @@
+"use client";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import ProfileAppointments from "./ConsultationsView";
@@ -83,10 +84,10 @@ const ProfileContent = ({ activeTab, setActiveTab, user, setUser, appointments, 
       {activeTab === "record-appointments" && (
         <ProfileAppointments
           setActiveTab={setActiveTab}
-          emergencyVisits={emergencyVisits}
           appointments={appointments}
           user={user}
           setUser={setUser}
+          emergencyVisits={emergencyVisits}
         />
       )}
       {activeTab === "doctor-appointments" && <DoctorAppointmentsHistory user={user} setUser={setUser} />}

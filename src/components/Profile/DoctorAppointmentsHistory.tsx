@@ -13,7 +13,13 @@ export default function DoctorAppointmentsHistory({ user, setUser }: { user: Use
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState<User | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<{
+    name?: string;
+    lastName?: string;
+    gender?: string;
+    dni?: string;
+    birthDate?: string;
+  } | null>(null);
   console.log("USER", user);
   useEffect(() => {
     async function fetchDoctorAppointments() {
@@ -72,7 +78,12 @@ export default function DoctorAppointmentsHistory({ user, setUser }: { user: Use
                   const birthDate = patient?.birthDate ? new Date(patient.birthDate) : null;
                   const edad = birthDate ? Math.floor((Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : "-";
                   // Motivo de consulta
-                  const motivo = (appt as any).reason || (appt as any).symptoms || "-";
+                  let motivo = "-";
+                  if ('reason' in appt && typeof appt.reason === 'string' && appt.reason) {
+                    motivo = appt.reason;
+                  } else if ('symptoms' in appt && Array.isArray(appt.symptoms) && appt.symptoms.length > 0) {
+                    motivo = appt.symptoms.join(", ");
+                  }
 
                   return (
                     <tr
@@ -89,7 +100,8 @@ export default function DoctorAppointmentsHistory({ user, setUser }: { user: Use
                       </td>
                       <td className="px-6 py-4">
                         {(() => {
-                          const dateValue = (appt as any).date || (appt as any).createdAt;
+                          const dateValue = (appt as { date?: string; createdAt?: string }).date
+                            || (appt as { date?: string; createdAt?: string }).createdAt;
                           const dateObj = dateValue ? new Date(dateValue) : null;
                           return dateObj && !isNaN(dateObj.getTime())
                             ? dateObj.toLocaleString("es-AR", { dateStyle: "full", timeStyle: "short" })
@@ -110,7 +122,7 @@ export default function DoctorAppointmentsHistory({ user, setUser }: { user: Use
                         <button
                           className="px-3 py-1 bg-sky-100 text-sky-700 rounded-lg border border-sky-300 hover:bg-sky-200 transition text-sm font-semibold"
                           onClick={() => {
-                            setSelectedPatient(patient);
+                            setSelectedPatient(patient || null);
                             setDrawerOpen(true);
                           }}
                         >

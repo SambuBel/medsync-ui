@@ -6,7 +6,6 @@ import {
     FaHeartbeat,
     FaUser,
     FaUserMd,
-    FaStethoscope,
     FaHistory,
   } from "react-icons/fa";
   import { ReactNode } from "react";

@@ -91,3 +91,10 @@ export enum Specialty {
   DENTISTRY = "DENTISTRY",
   PLASTIC_SURGERY = "PLASTIC_SURGERY",
 }
+
+export interface Slot {
+  date: string;
+  time: string;
+  dayOfWeek: number;
+  // ...otros campos si es necesario
+}

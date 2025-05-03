@@ -1,8 +1,8 @@
 import { auth, googleProvider } from "./firebaseConfig";
-import { signInWithPopup, createUserWithEmailAndPassword, signOut, sendEmailVerification, signInWithEmailAndPassword, linkWithPopup, fetchSignInMethodsForEmail } from "firebase/auth";
+import { signInWithPopup, createUserWithEmailAndPassword, signOut, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
-export const loginWithPhone = async (phoneNumber) => {
+export const loginWithPhone = async (phoneNumber: string) => {
     try {
       const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
@@ -14,11 +14,15 @@ export const loginWithPhone = async (phoneNumber) => {
       console.error("Error en Login con Teléfono:", error);
       throw error;
     }
-  };
+};
 
 
 // 🔹 Registrar usuario con Email/Contraseña y guardarlo en DB
-export const registerWithFirebase = async (email: string, password: string, additionalData: any) => {
+export const registerWithFirebase = async (
+  email: string,
+  password: string,
+  additionalData: Record<string, unknown>
+) => {
     try {
       // 🔹 Crear usuario en Firebase
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -45,7 +49,7 @@ export const registerWithFirebase = async (email: string, password: string, addi
       console.error("Error en registro:", error);
       throw error;
     }
-  };
+};
 
 // 🔹 Iniciar sesión con Google y vincular a tu DB
 export const loginWithGoogle = async () => {
@@ -74,7 +78,7 @@ export const loginWithGoogle = async () => {
       console.error("Error en Google Login:", error);
       throw error;
     }
-  };
+};
   
   
 // 🔹 Cerrar sesión
@@ -102,4 +106,14 @@ export const loginWithEmail = async (email: string, password: string) => {
       console.error("Error en login:", error);
       throw error;
     }
-  };
+};
+
+export const resetPassword = async (email: string) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return "📧 Correo de restablecimiento enviado. Revisa tu bandeja de entrada.";
+  } catch (error) {
+    console.error("Error al enviar correo de restablecimiento:", error);
+    throw error;
+  }
+};

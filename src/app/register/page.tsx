@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { GenderLabels, RoleEnum } from "@/utils/constants/Appointment";
-//import { motion, useAnimation } from "framer-motion";
 import InputField from "@/components/Register/InputField";
 import LoadingComponent from "@/components/common/LoadingComponent";
 import ModalComponent from "@/components/common/ModalComponent";
@@ -11,33 +10,6 @@ import { registerWithFirebase } from "@/firebase/auth";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
 
-/*
-const BouncingBall = ({ reverse }: { reverse?: boolean }) => {
-    const controls = useAnimation();
-  
-    useEffect(() => {
-      const animateBall = async () => {
-        while (true) {
-          await controls.start({
-            x: reverse ? [500, 0, -500, 0, 500] : [-500, 0, 500, 0, -500],
-            y: [0, 300, 0, -300, 0],
-            scale: [1, 1.8, 1.4, 1, 1],
-            borderRadius: ["50%", "40%", "50%"],
-            transition: { duration: 20, ease: "easeInOut", repeat: Infinity }
-          });
-        }
-      };
-      animateBall();
-    }, [controls, reverse]);
-  
-    return (
-      <motion.div
-        animate={controls}
-        className="absolute w-32 h-32 bg-blue-400 opacity-50 rounded-full"
-      />
-    );
-  };
-*/
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -55,7 +27,12 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -77,8 +54,8 @@ const RegisterPage = () => {
   
       setModalMessage("✅ Cuenta creada con éxito. Por favor, revisa tu correo para verificar tu cuenta.");
       setShowModal(true);
-    } catch (error: any) {
-      setModalMessage(`❌ ${error.message}`);
+    } catch {
+      setModalMessage(`❌ Error al crear la cuenta`);
       setShowModal(true);
     } finally {
       setLoading(false);
@@ -159,7 +136,12 @@ const RegisterPage = () => {
             </label>
           </div>
 
-            <select name="gender" value={formData.gender} onChange={handleChange} className="select select-bordered w-full bg-white text-gray-800">
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleSelectChange}
+              className="select select-bordered w-full bg-white text-gray-800"
+            >
               <option value="" disabled>Seleccione un género</option>
               {Object.entries(GenderLabels).map(([key, value]) => (
                 <option key={key} value={key}>{value}</option>

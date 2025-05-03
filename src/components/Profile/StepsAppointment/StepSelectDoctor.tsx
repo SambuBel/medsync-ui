@@ -4,6 +4,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { useState } from "react";
 import NoDoctorsAvailable from "./NoDoctorsAvailable";
 import LoadingComponent from "@/components/common/LoadingComponent";
+import type { Slot } from "@/utils/constants/Appointment";
 
 interface StepSelectDoctorProps {
   doctors: Doctor[];
@@ -19,7 +20,7 @@ const getTitleByGender = (gender: string) => {
 const daysOfWeek = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
 // Agrupar los turnos por fecha visible (ej: lunes, 31 de marzo de 2025)
-const groupSlotsByDay = (slots: any[]) => {
+const groupSlotsByDay = (slots: Slot[]) => {
   const grouped: { [key: string]: { label: string; slots: typeof slots } } = {};
 
   slots.forEach((slot) => {
@@ -81,10 +82,10 @@ const StepSelectDoctor = ({ doctors, selectedDoctor, onSelect, loading }: StepSe
               </div>
               <div>
                 <p className="text-lg font-bold text-gray-800">
-                  {getTitleByGender(doctor.user.gender)} {doctor.user.name} {doctor.user.lastName}
+                  {getTitleByGender(doctor.user?.gender || "")} {doctor.user?.name} {doctor.user?.lastName}
                 </p>
                 <p className="text-sm text-gray-600">
-                  {SpecialtyEnum[doctor.specialty[0]] || doctor.specialty[0]}
+                  {SpecialtyEnum[doctor.specialty[0] as keyof typeof SpecialtyEnum] || doctor.specialty[0]}
                 </p>
               </div>
             </div>
@@ -102,9 +103,9 @@ const StepSelectDoctor = ({ doctors, selectedDoctor, onSelect, loading }: StepSe
                 </button>
               )}
 
-              {doctor.availableSlots?.length > 1 && (
+              {doctor.availableSlots?.length && doctor.availableSlots?.length > 1 && (
                 <button
-                  onClick={() => setExpandedDoctorId(isExpanded ? null : doctor.id)}
+                  onClick={() => setExpandedDoctorId(isExpanded ? null : doctor.id || null)}
                   className="text-sky-600 text-sm mb-2 hover:underline transition-all"
                 >
                   {isExpanded ? "Ocultar horarios ▲" : "Ver más horarios ▼"}

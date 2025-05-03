@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { FaUserCircle, FaFileAlt } from "react-icons/fa";
 
 const iconAnimation = {
@@ -34,7 +34,7 @@ const QuoteRequest = () => {
 
         <motion.div
           className="absolute top-[20px] left-[60px] text-cyan-400 text-7xl"
-          variants={iconAnimation}
+          variants={iconAnimation as Variants}
           initial="initial"
           animate="animate"
         >
@@ -43,7 +43,7 @@ const QuoteRequest = () => {
 
         <motion.div
           className="absolute bottom-[50px] right-12 text-cyan-400 text-7xl"
-          variants={iconAnimation}
+          variants={iconAnimation as Variants}
           initial="initial"
           animate="animate"
         >

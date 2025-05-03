@@ -5,6 +5,7 @@ import { FaUserMd, FaChevronRight, FaUser, FaStethoscope, FaFileMedical, FaFileA
 import JitsiMeet from '../common/JitsiMeet';
 import { User } from './ProfilePersonalData';
 import EmptyState from "../common/EmptyState";
+import { MeetingStatus } from '../common/AppointmentStatusPill';
 
 // Mock data types
 type ConsultationType = 'ONLINE' | 'PEDIATRIA' | 'EMERGENCY';
@@ -18,7 +19,8 @@ interface Consultation {
   symptoms: string[];
   otherSymptoms?: string;
   waitingTime: string;
-  status: 'WAITING' | 'IN_PROGRESS' | 'COMPLETED';
+  status: MeetingStatus;
+  type: ConsultationType;
 }
 
 interface ActiveConsultation {
@@ -26,7 +28,7 @@ interface ActiveConsultation {
   patientName: string;
   patientAge: number;
   type: ConsultationType;
-  status: ConsultationStatus;
+  status: MeetingStatus;
   waitingTime?: string;
   symptoms?: string[];
   roomName?: string;
@@ -62,7 +64,6 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
     e.stopPropagation();
     
     try {
-      // Usar la ruta correcta que configuramos
       const res = await fetch(`/api/guardia/join/${consultation.roomName}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -74,7 +75,8 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
       setActiveCall({
         ...consultation,
         roomName: data.roomName,
-        status: 'IN_PROGRESS'
+        status: MeetingStatus.IN_PROGRESS,
+        type: consultation.type
       });
       
     } catch (error) {
@@ -96,7 +98,6 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
 
   useEffect(() => {
     fetchWaitingConsultations();
-    // Puedes agregar un intervalo para actualizar periódicamente
     const interval = setInterval(fetchWaitingConsultations, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -115,7 +116,6 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
     setExpandedConsultation(expandedConsultation === id ? null : id);
   };
 
-  // Si hay una llamada activa, mostrar la interfaz de Jitsi
   if (activeCall) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -138,7 +138,7 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
           </div>
           <JitsiMeet
             roomName={activeCall.roomName || ''}
-            server="https://localhost:8443"
+            server={process.env.NEXT_PUBLIC_JITSI_SERVER as string}
             displayName={`Dr. ${user?.name} ${user?.lastName}`}
             email={user?.email}
             role="moderator"
@@ -181,7 +181,7 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
               <div
                 key={consultation.id}
                 className={`bg-white rounded-xl border transition-all ${
-                  consultation.status === 'waiting' 
+                  consultation.status === MeetingStatus.WAITING 
                     ? 'border-yellow-200 hover:border-yellow-300' 
                     : 'border-gray-200 hover:border-sky-200'
                 }`}
@@ -208,11 +208,11 @@ export default function DoctorConsultations({ user, setUser }: { user: User, set
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    {getStatusBadge(consultation.status)}
-                    {consultation.status === 'WAITING' && (
+                    {getStatusBadge(consultation.status as unknown as ConsultationStatus)}
+                    {consultation.status === MeetingStatus.WAITING && (
                       <button
                         className="p-2 rounded-full bg-green-200 hover:bg-green-100 text-green-600 transition-colors"
-                        onClick={(e) => handleJoinCall(consultation, e)}
+                        onClick={(e) => handleJoinCall(consultation as unknown as Consultation, e)}
                         title="Atender paciente"
                       >
                         <FaVideo className="text-xl" />

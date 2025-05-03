@@ -112,10 +112,6 @@ export default function MyConsultationsTabs({ appointments, emergencyVisits, set
   );
 }
 
-function isEmergencyVisit(item: Appointment | EmergencyVisit): item is EmergencyVisit {
-  return 'symptoms' in item;
-}
-
 function isAppointment(item: Appointment | EmergencyVisit): item is Appointment {
   return 'specialty' in item;
 }
