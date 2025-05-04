@@ -75,7 +75,7 @@ export default function ConsultationsView({
             </tr>
           </thead>
           <tbody className="text-gray-700">
-            {appointments.length === 0 ? (
+            {(appointments?.length ?? 0) === 0 ? (
               <tr>
                 <td colSpan={4} className="py-8 text-center text-gray-400">
                   No hay turnos programados.

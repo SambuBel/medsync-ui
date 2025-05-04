@@ -73,8 +73,10 @@ export default function ProfilePage() {
   if (!user) return <p className="text-center mt-10">No autorizado</p>;
 
   return (
-    <div className="flex h-screen transition-all duration-300">
-      <div className={`transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"} h-screen overflow-y-auto flex-shrink-0`}>
+    <div className="flex h-screen transition-all duration-300 min-w-0">
+      <div
+        className={`transition-all duration-300 ${isCollapsed ? "w-20 overflow-y-hidden overflow-x-hidden" : "w-64 overflow-y-auto overflow-x-hidden"} h-screen flex-shrink-0`}
+      >
         <ProfileSidebar
           activeTab={activeTab}
           setActiveTab={setActiveTabAndUrl}

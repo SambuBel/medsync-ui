@@ -26,21 +26,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Verificar validez del token si es necesario
-  try {
-    // Aquí podrías agregar la verificación del token con tu backend
-    // Por ejemplo:
-    // const isValid = await verifyToken(session);
-    // if (!isValid) {
-    //   return NextResponse.redirect(new URL('/login', request.url));
-    // }
-    
-    console.log('Token válido, permitiendo acceso');
-    return NextResponse.next();
-  } catch (error) {
-    console.error('Error verificando token:', error);
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
+  // Si hay sesión, permitir acceso sin verificación adicional
+  return NextResponse.next();
 }
 
 export const config = {
